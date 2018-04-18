@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template_inherit_kt" >
+        <t t-extend="accountReports.searchView">
+            <t t-jquery=".o_account_reports_date-filter a" t-operation="append">
+                <t t-if="context.date_filter == 'vendor_staff'">Vendors &amp; Staff</t>
+                <t t-if="context.date_filter == 'vendors'">Vendors</t>
+                <t t-if="context.date_filter == 'staff'">Staff</t>
+            </t>
+            <t t-jquery=".o_account_reports_date-filter ul " t-operation="append">
+                <!--<li title="Vendor &amp; Staff" data-value="vendor_staff"><a>Vendors &amp; Staff</a></li>-->
+                <!--<li title="End of Last Quarter test" data-value="last_quarter" t-att-class="'o_account_reports_one-filter ' + (context.date_filter == 'last_quarter' and 'selected' or '')"><a>End of Last Quarter Test</a></li>-->
+                <li class="divider"></li>
+                <li>
+                    <label for="new_filter_type">Type :</label>
+                    <div>
+                        <div class='o_account_reports_newfiltertype' t-att-data-default-value="context.new_filter_type">
+                            <input type='text' name="new_filter_type"/>
+                        </div>
+                    </div>
+                </li>
+                <li title="Vendor &amp; Staff" data-value="vendor_staff" t-att-class="'o_account_reports_one-filter' + (context.date_filter == 'vendor_staff' and 'selected' or '')"><a>Vendors &amp; Staff</a></li>
+                <li title="Vendors" data-value="vendors" t-att-class="'o_account_reports_one-filter' + (context.date_filter == 'vendors' and 'selected' or '')"><a>Vendors</a></li>
+                <li title="Staff" data-value="staff" t-att-class="'o_account_reports_one-filter' + (context.date_filter == 'staff' and 'selected' or '')"><a>Staff</a></li>
+            </t>
+        </t>
+</templates>
+

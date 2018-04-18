@@ -1,0 +1,132 @@
+<odoo>
+<template id="beverage_selection_cocktail" customize_show="True" name="Beverage Selection Cocktail">
+        <t t-call="website.layout"> <!-- Jagadeesh modified -->
+            <div class="row mt16">
+                <div id="wrap">
+                        <div class="col-md-12">
+                            <div class="col-md-5">
+                                <table>
+                                    <tr>
+                                        <t t-foreach="categories" t-as="categ">
+                                            <t t-if="categ.categ_id.id == categ_id">
+                                                <td style="border:1px solid;background-color:black;color:white"><t t-esc="categ.categ_id.name"/></td>
+                                            </t>
+                                            <t t-if="not categ.categ_id.id == categ_id">
+                                                <td style="border:1px solid;background-color:#337ab7;color:white"><t t-esc="categ.categ_id.name"/></td>
+                                            </t>
+                                            <td><![CDATA[&nbsp;&nbsp;]]></td>
+                                        </t>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-2"></div>
+                            <div class="col-md-5">
+                                <table>
+                                    <tr>
+                                        <t t-foreach="sub_categories" t-as="sub_categ">
+                                            <t t-if="sub_categ.sub_categ_id.id == sub_categ_id">
+                                                <td style="border:1px solid;background-color:orange;color:white"><t t-esc="sub_categ.sub_categ_id.name"/></td>
+                                            </t>
+                                            <t t-if="not sub_categ.sub_categ_id.id == sub_categ_id">
+                                                <td style="border:1px solid;background-color:#337ab7;color:white"><t t-esc="sub_categ.sub_categ_id.name"/></td>
+                                            </t>
+                                            <td><![CDATA[&nbsp;&nbsp;]]></td>
+                                        </t>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                </div>
+                <div id="wrap" class="col-md-9">
+                        <div class="oe_product_cart">
+                                <div style="margin: 0px 10px;" class="oe_product_image"><!--- 190 44 -->
+                                    <t t-if="products">
+                                        <table width="100%"><!-- 55% -->
+                                        <tr>
+                                        <t t-foreach="products" t-as="product">
+                                            <td class="oe_product oe_grid oe-height-2" style="border-width: initial;border-color: cyan;">
+                                            <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image'}"/>
+                                            <t t-esc="product.product_product_id.name"/>
+ <input type="button" class="btn btn-default btn-primary mb32 a-submit" value="Add Product" t-attf-onclick="add_product('#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}')" id="add_product_id" style="display:block"/>
+                                            </td>
+                                        </t>
+                                        </tr>
+                                        </table>
+                                    </t>
+                                    <!-- Jagadeesh start -->
+                                    <div style="float:left">
+                                        <t t-if="page_prev">
+                                            <a class="btn btn-primary" href="/beverage_selection/prev">&lt;&lt; Prev</a>
+                                        </t>
+                                    </div>
+                                    <div style="float:right">
+                                        <t t-if="page_next">
+                                            <a class="btn btn-primary" href='/beverage_selection/next'>Next &gt;&gt; </a>
+                                        </t>
+                                        <t t-if="not page_next and finished">
+                                            <a class="btn btn-primary" href='/beverage_selection/complete'>I'm Finished</a>
+                                        </t>
+                                    </div>
+                                    <div clear="both"/>
+                                    <!-- Jagadeesh end -->
+                                </div>
+                        </div>
+                        <t t-if="prod1">
+                                <span><t t-esc="prod1"/></span>
+                        </t>
+
+
+                        <t t-if="error">
+                                <span><t t-esc="error"/></span>
+                        </t>
+
+                </div>
+                <div class="col-md-3 hidden-print">
+                      <div class="bs-sidebar">
+                         <table class="table table-responsive" id="member_table_cocktail">
+                            <tbody>
+                                <!-- Jagadeesh added -->
+                                <tr><td><font color="green">Selected Beverages</font></td></tr>
+                                <t t-foreach="selected_bevs" t-as="bev">
+                                    <tr><td style="border-bottom:none;color:red"><span t-esc="bev['categ_name']"/></td></tr>
+                                    <t t-foreach="bev['selected_beverages']" t-as="beverage">
+                                        <tr><td style="border-bottom:none;border-top:none;"><span t-esc="beverage"/></td></tr>
+                                    </t>
+                                </t>
+                                <!-- Jagadeesh end -->
+                            </tbody>
+                          </table>
+                      </div>
+                </div>
+        </div>
+
+</t>
+ <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"/>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"/>
+  <script>
+
+      function add_product(product_id,product_name,sub_categ_id,sub_categ_name)
+      {
+
+        url = '/add/'+product_id
+
+        jQuery.ajax({
+                url : url,
+                type: 'POST',
+                data:{product_id:product_id,product_name:product_name,sub_categ_id:sub_categ_id},
+                success:function(response){
+                    response = jQuery.parseJSON(response)
+                    if (response.flag==0){
+                        alert('Cannot add more than two products for same sub category')
+                    }
+                    else if(response.flag == 1){
+                        //$('#member_table tbody').append("<tr><td><b>"+sub_categ_name+"</b></td></tr><tr><td>"+product_name+"</td></tr>")
+                        $('#member_table_cocktail tbody').append("<tr><td>"+product_name+"</td></tr>")
+
+                    }
+                }
+        });
+      }
+      </script>
+</template>
+</odoo>

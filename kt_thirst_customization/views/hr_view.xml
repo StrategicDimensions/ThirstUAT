@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+	<record id="view_hr_job_form_inherit" model="ir.ui.view">
+	    <field name="name">view.hr.job.form.inherit</field>
+	    <field name="model">hr.job</field>
+	    <field name="inherit_id" ref="hr.view_hr_job_form"/>
+	    <field name="arch" type="xml">
+		<field name="no_of_recruitment" position="after">
+		    <field name="rate"/>
+		</field>
+	    </field>
+	</record>
+    </data>
+
+    <record id="job_title_action_main" model="ir.actions.act_window">
+		<field name="name">Job Title</field>
+		<field name="res_model">hr.job</field>
+		<field name="view_type">form</field>
+		<field name="view_mode">tree,form</field>
+	</record>
+
+    <menuitem id="job_title_menu_main" parent="hr.menu_hr_root" name="Job Title" action="job_title_action_main" sequence="95"/>
+</odoo>

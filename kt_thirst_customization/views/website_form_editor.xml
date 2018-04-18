@@ -1,0 +1,9 @@
+<odoo>
+    <data>
+	<template id="snippet_options_WFE_inherit" inherit_id="website_form_editor.snippet_options">
+	    <xpath expr="//li[@class='dropdown-submenu']//ul[@class='dropdown-menu']" position="replace">
+	   	<li data-website_form_custom_field="date"><a>Date</a></li>
+	    </xpath>
+	</template>
+    </data>
+</odoo>

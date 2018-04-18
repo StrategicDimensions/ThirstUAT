@@ -1,0 +1,60 @@
+<odoo>
+    	<record id="crm_case_form_view_leads_inherit" model="ir.ui.view">
+	    <field name="name">crm.case.form.view.leads.inherit</field>
+	    <field name="model">crm.lead</field>
+	    <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+            <field name="arch" type="xml">
+		<!-- Raaj -->
+		<xpath expr="//form/header/button[1]" position="after">
+			<button name="open_myform" string="Send SMS" type="object" class="oe_highlight"/>
+		</xpath>
+		<field name="team_id" position="after">
+		    <field name="near_thirst_dep"/>
+		    <field name="function_type"/>
+		    <field name="required_services_ids" widget="many2many_tags"  options="{'no_create_edit':True,'no_open':True,'no_quick_create':True}"/>
+		    <field name="bar_style"/>
+		    <field name="function_venue"/>
+		</field>
+		<field name="tag_ids" position="after">
+		    <field name="function_start_time"/>
+		    <field name="function_end_time"/>
+		    <field name="no_of_guests"/>
+		    <field name="budget_amt"/>
+		    <!--<field name="start_time" widget="float_time"/>-->
+		    <!--<field name="fun_start_date"/>-->			
+		    <!--<field name="fun_start_time_hr"/>-->
+		    <!--<field name="fun_end_date"/>-->
+		</field>
+	    </field>
+	</record>
+
+	<record id="crm_case_form_view_oppor_inherit" model="ir.ui.view">
+            <field name="name">crm.case.form.view.oppor.inherit</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+            <field name="arch" type="xml">
+                <field name="team_id" position="after">
+                    <field name="near_thirst_dep"/>
+                    <field name="function_type"/>
+		    <field name="required_services_ids" widget="many2many_tags"  options="{'no_create_edit':True,'no_open':True,'no_quick_create':True}"/>
+                    <field name="bar_style"/>
+                    <field name="function_venue"/>
+		</field>
+		<field name="tag_ids" position="after">
+                    <field name="function_start_time"/>
+                    <field name="function_end_time"/>
+                    <field name="no_of_guests"/>
+                    <field name="budget_amt"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="crm_lead_action_salesperson" model="ir.actions.server">
+            <field name="name">Remove Salesperson on Lead Creation</field>
+            <field name="model_id" ref="crm.model_crm_lead"/>
+            <field name="state">code</field>
+            <field name="code">action = env['crm.lead'].change_salesperson(context.get('active_ids'))</field>
+        </record>
+
+
+</odoo>

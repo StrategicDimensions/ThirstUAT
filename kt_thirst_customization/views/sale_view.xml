@@ -1,0 +1,263 @@
+<openerp>
+    <data>
+	<!-- sale order for inherited -->
+	<record id="view_order_form_inherit" model="ir.ui.view">
+	    <field name="name">sale.order.form.inherit</field>
+	    <field name="model">sale.order</field>
+	    <field name="inherit_id" ref="sale.view_order_form"/>
+	    <field name="arch" type="xml">
+		<xpath expr="//button[@name='action_done']" position="after">
+                    <button name="goto_beverages_selection" type="object" class="oe_highlight" string="Go to Beverages Selecton" attrs="{'invisible':[('state','!=','sale')]}"/>
+                </xpath>
+		<field name="payment_term_id" position="after">
+		    <field name="no_of_people" string="No of Guests"/>
+		    <field name="time_start" string="Function Start Date &amp; Time"/>
+		    <field name="time_end" string="Function End Date &amp; Time"/>
+		    <field name="budget_amt"/>
+		    <field name="project_project_id" readonly="1"/>
+                    <field name="ignore_beverage_selection" />
+		    <!--<field name="full_bar_selection_completed" readonly="1"/>
+		    <field name="cocktail_bar_selection_completed" readonly="1"/>
+		    <field name="premium_beverages" readonly="1"/>
+		    <field name="beverage_menu_id" readonly="1"/>-->
+	        </field>
+		<field name="partner_id" position="after">
+			<field name="near_thirst_dep"/>
+		        <field name="function_type"/>
+			<field name="service_required_ids" widget="many2many_tags" options="{'no_create_edit':True,'no_open':True,'no_quick_create':True}"/>
+			<field name="bars" string="Bar Style"/>
+			<field name="function_venue"/>
+			<field name="division_ids" widget="many2many_tags" options="{'no_create_edit':True}"/>
+		</field>
+		<xpath expr="//notebook/page[1]/field/form/group/group[1]/field[@name='price_unit']" position="after">
+		    <field name="days"/>
+                    <field name="hours"/>
+                </xpath>
+                <xpath expr="//notebook/page[1]/field/tree/field[@name='price_unit']" position="after">
+		    <field name="days"/>
+                    <field name="hours"/>
+                </xpath>		
+		<!--<xpath expr="//field[@name='order_line']" position="after">
+                    <separator string="Consumables"/>
+                        <field name="consumable_beverage_ids" domain="[('classification','=','consumable')]">
+                            <tree editable="bottom" create="false" delete="false">
+                                <field name="product_code" readonly="1"/>
+                                <field name="product_id" readonly="1"/>
+                                <field name="classification" readonly="1"/>
+                                <field name="qty_required" readonly="0"/>
+                                <field name="on_hand" readonly="1"/>
+                                <field name="variance" readonly="1"/>
+                                <field name="forecasted" readonly="1"/>
+                            </tree>
+                            <form></form>
+                        </field>
+		</xpath>-->
+		<xpath expr="//group[@name='sales_person']" position="after">
+                          <group string="Cancel Reason">
+                                    <field name="required_reason" invisible="1"/>
+                                    <!--<field name="lost_reason_id" readonly="1" options="{'no_create_edit':True,'no_open':True}" attrs="{'invisible':[('required_reason','=',True)] }"/>
+                                    <field name="lost_reason" readonly="1" attrs="{'invisible':[('required_reason','=',False)] }"/>-->
+                                    <field name="lost_reason_id" readonly="1" options="{'no_create_edit':True,'no_open':True}" />
+                                    <field name="lost_reason" readonly="1"/>
+                          </group>
+                </xpath>
+	    </field>
+	</record>
+
+	<!-- service required form -->
+	<record id="service_required_form" model="ir.ui.view">
+	    <field name="name">service.required.form</field>
+	    <field name="model">service.required</field>
+	    <field name="arch" type="xml">
+		<form>
+		    <sheet>
+			<group>
+			    <group>
+				<field name="name"/>
+			    </group>
+			    <group></group>
+			</group>
+		    </sheet>
+		</form>
+	   </field>
+	</record>
+	
+	<!-- service required tree -->
+	<record id="service_required_tree" model="ir.ui.view">
+	    <field name="name">service.required.tree</field>
+	    <field name="model">service.required</field>
+	    <field name="arch" type="xml">
+		<tree>
+		    <field name="name"/>
+		</tree>
+	    </field>
+	</record>
+	<!-- service required action -->
+	<record id="service_required_action" model="ir.actions.act_window">
+	     <field name="name">Service Required</field>
+	     <field name="res_model">service.required</field>
+	     <field name="view_type">form</field>
+	     <field name="view_mode">tree,form</field>
+	</record>	
+
+
+        <!-- Division form -->
+        <record id="division_view_form" model="ir.ui.view">
+            <field name="name">division.view.form</field>
+            <field name="model">division.division</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                            </group>
+                            <group></group>
+                        </group>
+                    </sheet>
+                </form>
+           </field>
+        </record>
+
+        <!-- division tree -->
+        <record id="division_view_tree" model="ir.ui.view">
+            <field name="name">division.view.tree</field>
+            <field name="model">division.division</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- division action -->
+        <record id="division_action" model="ir.actions.act_window">
+             <field name="name">Division</field>
+             <field name="res_model">division.division</field>
+             <field name="view_type">form</field>
+             <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- division menu -->
+        <menuitem id="division_menu" action="division_action" name="Division" parent="sale.menu_sales_config" sequence="1"/>
+
+
+	<!-- service required menu -->
+	<menuitem id="service_required_menu" action="service_required_action" name="Service Required" parent="sale.menu_sales_config" sequence="2"/>
+
+    <record id="sale_crm.crm_case_form_view_oppor" model="ir.ui.view">
+            <field name="name">crm.lead.oppor.inherited.crm</field>
+            <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_set_won']" position="before">
+                    <button string="New Quotation" name="%(sale_crm.sale_action_quotations_new)d" type="action" class="oe_highlight"
+                        context="{'search_default_partner_id': partner_id,
+                                        'default_partner_id': partner_id,
+                                        'default_team_id': team_id,
+				        'default_near_thirst_dep':near_thirst_dep,
+                                        'default_function_type': function_type,
+                                        'default_service_required_ids':required_services_ids,
+                                        'default_bars':bar_style,
+                                        'default_function_venue':function_venue,
+                                        'default_time_start':function_start_time,
+                                        'default_time_end':function_end_time,
+                                        'default_budget_amt':budget_amt,
+                                        'default_no_of_people':no_of_guests}"/>
+                </xpath>
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" type="action"
+                            name="%(sale_crm.sale_action_quotations)d" icon="fa-pencil-square-o"
+                            context="{'default_partner_id': partner_id, 
+					'search_default_draft': 1,
+					'default_near_thirst_dep':near_thirst_dep,
+					'default_function_type': function_type,
+					'default_service_required_ids':required_services_ids,
+					'default_bars':bar_style,
+					'default_function_venue':function_venue,
+					'default_time_start':function_start_time,
+					'default_time_end':function_end_time,
+					'default_budget_amt':budget_amt,
+					'default_no_of_people':no_of_guests}">
+                        <div class="o_stat_info">
+                            <field name="sale_number" class="o_stat_value"/>
+                            <span class="o_stat_text"> Quote(s) </span>
+                        </div>
+                    </button>
+                    <button class="oe_stat_button" type="action" attrs="{'invisible': [('sale_amount_total', '=', 0)]}"
+                            name="%(sale_crm.sale_action_quotations)d" icon="fa-usd"
+                            context="{'search_default_partner_id': partner_id, 'default_partner_id': partner_id, 'search_default_sales': 1}">
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_value"><field name="sale_amount_total" widget="monetary" options="{'currency_field': 'company_currency'}"/></span>
+                            <span class="o_stat_text"> Orders</span>
+                        </div>
+                    </button>
+                </div>
+            </field>
+        </record>
+
+	<record id="view_sale_quote_template_form_inherit" model="ir.ui.view">
+	    <field name="name">sale.quote.template.form.inherit</field>
+	    <field name="model">sale.quote.template</field>
+	    <field name="inherit_id" ref="website_quote.view_sale_quote_template_form"/>
+	    <field name="arch" type="xml">
+		<!--<field name="price_unit" position="after">
+		    <field name="hours"/><field name="days"/>
+		</field>-->
+		<!--<xpath expr="//notebook//field[@name='price_unit']" position="after">
+		    <field name="hours"/>
+		    <field name="days"/>
+		</xpath>-->
+		<!--<field name="price_unit" position="attributes">
+		    <attribute name="invisible">0</attribute>
+		</field>-->
+		<xpath expr="//field[@name='quote_line']/tree//field[@name='product_uom_id']" position="after">
+                    <field name="days"/>
+                    <field name="hours"/>
+                </xpath>
+
+	    </field>
+	</record>
+
+	<record id="quotation_cancel_form" model="ir.ui.view">
+                    <field name="name">quotation.cancel.form</field>
+                    <field name="model">quotation.cancel</field>
+                    <field name="arch" type="xml">
+                        <form>
+                            <sheet>
+                                <group>
+                                    <group>
+                                        <field name="required_reason" invisible="1"/>
+                                        <field name="lost_reason_id" options="{'no_create_edit':True,'no_open':True}" required="1"/>
+                                        <!--<field name="lost_reason" attrs="{'required':[('required_reason','=',True)]}"/>-->
+                                    </group>
+                                    <group></group>
+                                </group>
+                                <group>
+                                    <field name="lost_reason" attrs="{'required':[('required_reason','=',True)]}"/>
+                                </group>
+                            </sheet>
+                            <footer>
+                                <button name="submit_reason" type="object" string="Submit" class="oe_highlight"/>
+                                or
+                                <button string="Cancel" class="oe_link" special="cancel"/>
+                            </footer>
+                        </form>
+                    </field>
+                </record>
+
+        <record id="view_picking_form_inherit_it" model="ir.ui.view">
+                <field name="name">stock.picking.form</field>
+                <field name="model">stock.picking</field>
+                <field name="inherit_id" ref="stock.view_picking_form"/>
+                <field name="arch" type="xml">
+                    <field name="origin" position="after">
+                        <field name="project_id" readonly="1" invisible="1"/>
+                    </field>
+                </field>
+        </record>
+
+
+    </data>
+</openerp>
+		

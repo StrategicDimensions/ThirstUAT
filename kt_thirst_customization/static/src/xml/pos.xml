@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template_inherit" >
+    <t t-extend = 'ActionpadWidget'>
+	<t t-jquery="div" t-operation="inner">
+	    <!--<button t-attf-class='button set-customer #{ ( widget.pos.get_client() and widget.pos.get_client().name.length > 10) ? "decentered" : "" }' >-->
+		<button t-attf-class='button set-project #{ ( widget.pos.pos_session.project_id and widget.pos.pos_session.project_id[1].length > 10) ? "decentered" : "" }' >
+                <!--<i class='fa fa-user' />-->
+		<!-- jagadeesh start -->
+                <!--<t t-if="widget.pos.get_client()">
+                    <t t-esc="widget.pos.get_client().name" />
+                </t>
+                <t t-if="!widget.pos.get_client()">
+                    Project
+                </t>-->
+		<t t-if="widget.pos.pos_session.project_id">
+		    <t t-esc="widget.pos.pos_session.project_id[1]"/>
+		</t>
+		<t t-if="!widget.pos.pos_session.project_id">
+		    Project
+		</t>
+		<!-- jagadeesh end -->
+            </button>
+            <!--<button class="button project-beverages">Set Beverages</button>--><!-- jagadeesh -->
+            <button class='button pay'>
+                <div class='pay-circle'>
+                    <i class='fa fa-chevron-right' />
+                </div>
+                Payment
+            </button>
+	</t>
+    </t>
+
+    <t t-extend="ClientLine">
+	<t t-jquery="tr" t-operation="inner">
+	    <td><t t-esc='partner.name' /></td>
+	</t>
+    </t>
+
+    <t t-extend="ClientDetails">
+	<t t-jquery="section" t-operation="inner">
+            <div class='client-name'><t t-esc='partner.name' /></div>
+            <div class='client-details-box clearfix'>
+                <div class='client-details-left'>
+                    <div class='client-detail'>
+                        <span class="label">Name</span>
+                        <t t-if="partner.name">
+                            <span class="detail"><t t-esc="partner.name"/></span>
+                        </t>
+                    </div>
+                </div>
+	    </div>
+	</t>
+    </t>	
+
+    <t t-extend="ClientListScreenWidget">
+	<t t-jquery="section.top-content" t-operation="inner">
+                    <span class='button back'>
+                        <i class='fa fa-angle-double-left'></i>
+                        Cancel
+                    </span>
+                    <span class='searchbox'>
+                        <input placeholder='Search Projects' />
+                        <span class='search-clear'></span>
+                    </span>
+                    <span class='searchbox'></span>
+
+                    <span class='button next oe_hidden highlight'>
+                        Select Project 
+                        <i class='fa fa-angle-double-right'></i>
+                    </span>
+	</t>	
+	<t t-jquery="tr" t-operation="inner">
+	     <th>Name</th>
+	</t>
+    </t>
+    <t t-extend="PaymentScreenWidget">
+	<t t-jquery="div.paymentmethods-container" t-operation="after">
+	    <div id="converted_cash_bar">
+		<center><h2><font color="red">Budget Depleted, Converted to Cash Bar</font></h2></center>
+	    </div>
+	    <div> 
+	        <center><p>Budget Available : </p><readonly><input style="text-align:center" type="text" name="amount" disabled="disabled"/></readonly></center>
+	    </div>
+	</t>
+	<t t-jquery="div.js_set_customer" t-operation="replace">
+            <div class='button js_set_project'><!-- jagadesh -->
+                <!--<i class='fa fa-user' />-->
+                <span class='js_customer_name'>
+		    <t t-if="widget.pos.pos_session.project_id">
+                        <t t-esc="widget.pos.pos_session.project_id[1]"/>
+                    </t>
+                    <t t-if="!widget.pos.pos_session.project_id">
+                        Project
+                    </t>
+                </span>
+            </div>
+	</t>
+    </t>
+
+    <!-- Jagadeesh MAY18 start -->
+<!--<t t-extend="Product" name="ProductStockWidget">
+    <t t-jquery="div.product-img" t-operation="replace">
+        <div class="product-img">
+                <img t-att-src='image_url' /> 
+                <t t-if="!product.to_weight">
+                    <span class="price-tag">
+                        <t t-esc="widget.format_currency(product.price)"/>
+                    </span> 
+                    <t t-if="widget.pos.config.show_qty_on_pos">
+                        <t t-if="widget.pos.products_on_hand[product.id]>=0">
+                            <span class="product-qty" >
+                                <t t-esc="widget.pos.products_on_hand[product.id]"/>                     
+                            </span>                     
+                        </t>
+                        <t t-if="widget.pos.products_on_hand[product.id]&lt;0">
+                            <span class="product-qty-low" >
+                                <t t-esc="widget.pos.products_on_hand[product.id]"/>
+                            </span>                     
+                        </t>
+                    </t>    
+                </t>
+                <t t-if="product.to_weight">
+                    <span class="price-tag">
+                        <t t-esc="widget.format_currency(product.price)+'/Kg'"/>
+                    </span>
+                    <t t-if="widget.pos.config.show_qty_on_pos">
+                        <t t-if="widget.pos.products_on_hand[product.id] >= 0">
+                            <span class="product-qty" >
+                                <t t-esc="widget.pos.products_on_hand[product.id] + ' Kgs'"/>                        
+                            </span>                     
+                        </t>
+                        <t t-if="widget.pos.products_on_hand[product.id]&lt;0">
+                            <span class="product-qty-low" >
+                                <t t-esc="widget.pos.products_on_hand[product.id] + ' Kgs'"/>
+                            </span>                     
+                        </t>
+                    </t>  
+                </t>
+            </div>        
+    </t>
+</t>-->
+<!-- Jagadeesh MAY18 end -->
+
+<!-- Jagadeesh sep 05 start -->
+<t t-extend="Product" name="ProductStockWidget">
+    <t t-jquery="div.product-img" t-operation="replace">
+        <div class="product-img">
+            <img t-att-src='image_url' />
+            <span class="price-tag">
+                <t t-esc="widget.format_currency(product.price,'Product Price')"/>
+                <t t-if="product.to_weight" t-esc="'/'+widget.pos.units_by_id[product.uom_id[0]].name"/>
+            </span>
+            <t t-if="widget.pos.config.show_qty_on_pos">
+                <span t-att-class="'product-qty ' + ((widget.pos.products_on_hand[product.id]>0)? '' : 'product-qty-low') " >
+                    <span class="qty" >
+                        <t t-esc="widget.pos.products_on_hand[product.id]"/>
+                    </span>
+                    <t t-if="product.to_weight" t-esc="' Kgs'"/>
+                </span>
+            </t>
+        </div>
+    </t>
+</t>
+<!-- Jagadeesh sep 05 end -->
+
+
+
+
+</templates>	

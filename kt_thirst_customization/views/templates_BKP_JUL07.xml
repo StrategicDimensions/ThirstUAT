@@ -1,0 +1,1030 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="order_state_message_inherit" inherit_id="website_sale.order_state_message" name="Order State Message">
+	<xpath expr="//t[1]" position="replace">	
+	    <t></t>
+	</xpath>
+    </template>
+
+    <template id="confirmation_inherit" inherit_id="website_sale.confirmation" name="Confirmation Page">
+	<xpath expr="//div[@class='col-lg-8 col-sm-9']" position="before">
+	    <div>
+		<t t-if="full_bar">
+		    <a class="btn btn-primary" t-attf-href="/beverage_selection/full_bar/{{project_id}}" target="_blank">Go to Full Bar Beverage Selection</a>
+		</t>
+		<t t-if="cocktail_bar">
+		    <a class="btn btn-primary" t-attf-href="/beverage_selection/cocktail_bar/{{project_id}}" target="_blank">Go to Cocktail Bar Beverage Selection</a>
+		</t>
+		<!--<a class="btn btn-primary" href="/beverage_selection/full_bar" target="_blank">Go to Full Bar Beverage Selection</a>
+		<a class="btn btn-primary" href="/beverage_selection/cocktail_bar" target="_blank">Go to Cocktail Bar Beverage Selection</a>-->
+	    </div>
+	</xpath>
+    <xpath expr="//table[1]/thead/tr/th[3]" position="after">
+        <th class="text-right">Days</th><th class="text-right">Hours</th>
+    </xpath>
+    <xpath expr="//table[1]/tbody/tr/td[3]" position="after">
+        <td class="text-right"><span t-field="line.days"/></td><td class="text-right"><span t-field="line.hours"/></td>
+    </xpath>
+    <xpath expr="//table[1]/tfooter/tr[1]/td[1]" position="after">
+        <td colspan="2"></td>
+    </xpath>
+    <xpath expr="//table[1]/tfooter/tr[2]/td[1]" position="after">
+        <td class='noborder' colspan="2"></td>
+    </xpath>
+    <xpath expr="//table[1]/tfooter/tr[3]/td[1]" position="after">
+        <td class='noborder' colspan="2"></td>
+    </xpath>
+       
+	<!--<xpath expr="//a[@href='/shop/print']" position="before">
+	   <![CDATA[&nbsp;]]> <a class="btn btn-primary pull-right" href="/shop" target="_blank">Go to shop</a>
+	</xpath>-->
+    </template>
+
+    <!--<template id="bar_experience" inherit_id="website_sale.cart" customize_show="True" name="Continue Shopping Button">
+	<xpath expr="//a[@href='/shop/checkout']" position="after">
+	    <div>
+	        <a href="/bar/experience" class="btn btn-primary pull-right mb32">Add to Bar Experience</a>
+	    </div>
+	</xpath>
+    </template>-->
+
+    <!-- Raaj-->
+<template id="account_blocked_template" name="Account Blocked">
+            <t t-call="website.layout">
+                <div class="alert alert-danger" role="alert">
+                    <center>Account Blocked: Unfortunately we cannot process your order right now as your account has been blocked, kindly contact the sales rep '<t t-esc="sale_rep"/>'.</center>
+                </div>
+            </t>
+	</template>
+	<template id="credit_limit_template" name="Credit Limit">
+	    <t t-call="website.layout">
+		<div class="alert alert-danger" role="alert">
+		    <center>Credit Limit Reached: Unfortunately we cannot process your order right now as you have reached your credit limit, kindly contact your sales rep '<t t-esc="sale_rep"/>'.</center>
+		</div>
+	    </t>
+	</template>
+
+
+	<!-- Jagadeesh start APR 04 -->
+	<template id="pricing_inherit" inherit_id="website_quote.pricing">
+    	    <xpath expr="//table/thead/tr/th[5]" position="after">
+		<th class="text-right">Days</th>
+		<th class="text-right">Hours</th>
+	    </xpath>
+
+	    <xpath expr="//table/tbody/t/t[2]/tr/td[5]" position="after">
+		<td class="text-right">
+                    <span t-field="line.days"/>
+                </td>
+		<td class="text-right">
+                    <span t-field="line.hours"/>
+                </td>
+	    </xpath>
+
+	    <xpath expr="//table/tbody/t[2]/tr[1]/td[1]" position="after">
+	 	<td></td><td></td>
+	    </xpath>
+
+	    <xpath expr="//table/tbody/t[2]/tr[2]/td[1]" position="after">
+                <td></td><td></td>
+            </xpath>
+	    <xpath expr="//table/tbody/t[2]/tr[3]/td[1]" position="after">
+                <td></td><td></td>
+            </xpath>
+	</template>
+	<!-- Jagadeesh end APR 04 -->
+
+	<template id="so_quotation_inherit" name="Product Quotation" inherit_id="website_quote.so_quotation">
+	    <div id="modalaccept" position="replace">
+		<div class="modal fade" id="modalaccept" role="dialog" aria-hidden="true">
+		<t t-if="account_blocked and not credit_limit_exceeded">
+		    <div class="modal-dialog">		    
+                	<div class="alert alert-danger" role="alert">
+			    <button style="float:right;" class="btn btn-link" data-dismiss="modal">x</button>
+			    <div style="clear:both;"/>
+                    	    <center>Account Blocked: Unfortunately we cannot process your order right now as your account has been blocked, kindly contact the sales rep '<t t-esc="sale_rep"/>'.</center>
+	                </div>
+        	    </div>
+		</t>
+	        <t t-if="not account_blocked and credit_limit_exceeded">
+		    <div class="modal-dialog">
+                	<div class="alert alert-danger" role="alert">
+			    <button style="float:right;" class="btn btn-link" data-dismiss="modal">x</button>
+			    <div style="clear:both;"/>
+	                    <center>Credit Limit Reached: Unfortunately we cannot process your order right now as you have reached your credit limit, kindly contact your sales rep '<t t-esc="sale_rep"/>'.</center>
+        	        </div>
+	            </div>
+		</t>
+		<t t-if="not account_type_account">
+	<div class="modal-dialog modal-content" t-if="quotation.require_payment or need_payment">
+                          <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&amp;times;</button>
+                            <h4 class="modal-title">Validate Order</h4>
+                          </div>
+                          <div class="modal-body" id="sign-dialog">
+                            <p>
+                                <span>I agree that by paying this proposal, I
+                                accept it on the behalf of </span><b t-field="quotation.partner_id.commercial_partner_id"/><span>, for an amount of </span>
+                                <b data-id="total_amount" t-field="quotation.amount_total"
+                                  t-options='{"widget": "monetary", "display_currency": quotation.pricelist_id.currency_id}'/>
+                                <span>with payment terms: </span><b t-field="quotation.payment_term_id"/>.
+                            </p>
+                          </div>
+                          <div class="modal-footer">
+                              <!-- begin website_sale code -->
+                              <div t-if="acquirers" id="payment_method" class="row text-left">
+                                <div class="col-md-12">
+                                    <div id="tc_accept">
+
+                                          <input type="checkbox" name="tc_accept" value="accept"/> I have read and accepting the T &amp; C's and Privacy Policy of Thirst Bar Services.<p></p>
+                                          <t>Click <a href='http://thirstuat.odoo.co.za/page/terms-conditions' target="_blank">here</a> to view Terms and Conditions.</t><br/>
+                                          <t>Click <a href='http://thirstuat.odoo.co.za/page/privacy-policy' target="_blank">here</a> to view Privacy Policy.</t><br/>
+                                          <hr/>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                  <h4>Payment Method:</h4>
+                                  <ul class="list-unstyled">
+                                    <li t-foreach="acquirers or []" t-as="acquirer">
+                                      <label t-if="buttons.get(acquirer.id)">
+                                          <input t-att-value="acquirer.id" type="radio" name="acquirer" t-att-checked="acquirers[0] == acquirer"/>
+                                          <img class="media-object" style="width: 60px; display: inline-block;"
+                                              t-att-title="acquirer.name"
+                                              t-att-src="'/payment_%s/static/src/img/%s_icon.png' % (acquirer.provider, acquirer.provider)"/>
+                                              <span t-field="acquirer.name"/>
+                                      </label>
+                                    </li>
+                                  </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <t t-foreach="acquirers or []" t-as="acquirer">
+                                        <div t-att-data-id="acquirer.id" class="oe_quote_acquirer_button hidden pull-right">
+                                          <div t-raw="buttons.get(acquirer.id)"/>
+                                          <div t-field="acquirer.pre_msg"/>
+                                          <button type="button" class="btn btn-link" data-dismiss="modal" style="padding: 0">Cancel</button>
+                                        </div>
+                                    </t>
+                                </div>
+                              </div></div></div>
+		</t>
+	        <t t-if="not account_blocked and not credit_limit_exceeded">
+                    <div class="modal-dialog" t-if="not quotation.require_payment and not need_payment">
+                	<form action="/submit_purchase_order" method="POST" id="accept" class="js_accept_json modal-content js_website_submit_form" enctype="multipart/form-data">
+	                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+			    <input type="hidden" name="quotation_id" t-att-value="quote_id"/>
+			    <input type="hidden" name="token" t-att-value="token"/>
+            		    <div class="modal-header">
+	                        <h4 class="modal-title">Purchase Order Information</h4>
+            		    </div>
+		            <div class="modal-body">
+		                <div class="form-group field-login">
+                 		    <label for="po_number" class="control-label" >Purchase Order Number</label>
+		                    <input type="text" name="po_number" t-att-value="NUMBER" id="po_number" class="form-control" required="True"/>
+                		</div>
+		                <div class="form-group field-login">
+                		    <label for="po_attach" class="control-label" >Purchase Order Attachment</label>
+		                    <input type="file" name="po_attach" t-att-value="ATTACHMENT" id="po_attach" class="form-control" required="True"/>
+                		</div>
+                  	    </div>
+	                    <div class="modal-footer">
+				<div class="clearfix oe_login_buttons">
+                                  <button type="submit" t-attf-class="btn btn-primary">Accept Quote</button> or
+                                  <button type="button" class="btn btn-link" data-dismiss="modal" style="padding: 0">Cancel</button>
+                                </div>
+			    </div>
+                	</form>
+                    </div>
+		</t>
+		</div>
+	    </div>
+  	</template>
+
+	<template id="purchase_order_update" name="Purchase Order">
+		<t t-call="website.layout">
+	            <div class="alert alert-success" role="alert">
+			<center>Your Purchase Order Information hasbeen updated</center>
+		    </div>
+		</t>
+	</template>
+
+
+        <!-- <template id="beverages_selection_layout" inherit_id="website.assets_frontend">
+            <xpath expr="." position="inside">
+                <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+                <script type="text/javascript" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.js"></script>
+                <script type="text/javascript" src="https://cdn.datatables.net/fixedcolumns/3.2.0/js/dataTables.fixedColumns.js"></script>
+                <script type="text/javascript" src="/kt_thirst_customization/static/src/js/beverages_selection.js"></script>	  
+            </xpath>
+        </template> -->
+
+<template id="beverage_selection_test" name="Beverage Selection Test"> 
+	 <t t-call="website.layout"> <!-- Jagadeesh modified -->     
+            <div id="wrap" class="oe_structure oe_empty">
+                <!--<div class="container">
+			<h2>Test Page</h2>
+		</div>-->
+	    </div>
+	</t>
+</template>
+	
+<template id="beverage_selection_page" name="Beverage Selection">
+	<t t-call="website.layout"> <!-- Jagadeesh modified -->	    
+	    <div id="wrap" class="oe_structure oe_empty">
+		<!-- snippet area-->
+	    </div>
+	    <div class="row mt16">
+	        <div id="wrap" class="oe_structure oe_empty">
+                    <!-- snippet area-->
+                </div>
+	        <div class="col-md-9">
+			<div class="col-md-12">
+			    <div class="col-md-6">
+				<ul class="wizard pull-left" style="margin-top:0px;">
+				    <t t-foreach="categories" t-as="categ">
+					<t t-if="categ.categ_id.id == categ_id">
+			            	    <li class="text-primary" style="padding-left:13px;padding-right:5px;">
+					<t t-esc="categ.categ_id.name"/> (<t t-esc="categ.max_products"/>)<span class="chevron"></span>
+					    </li>
+					</t>
+					<t t-if="not categ.categ_id.id == categ_id">
+					     <li class="text-muted" style="padding-left:13px;padding-right:5px;">
+                                                <t t-esc="categ.categ_id.name"/> (<t t-esc="categ.max_products"/>)<span class="chevron"></span>
+                                             </li>
+					</t>
+			             </t>
+				</ul>
+				<!--<table>
+				    <tr>
+					<t t-foreach="categories" t-as="categ">
+					    <t t-if="categ.categ_id.id == categ_id">
+						<td style="border:1px solid;background-color:black;color:white"><t t-esc="categ.categ_id.name"/></td>
+					    </t>
+					    <t t-if="not categ.categ_id.id == categ_id">
+					        <td style="border:1px solid;background-color:#337ab7;color:white"><t t-esc="categ.categ_id.name"/></td>
+					    </t>
+					    <td><![CDATA[&nbsp;&nbsp;]]></td>
+					</t>
+				    </tr>
+				</table>-->
+			    </div>
+			    <!--<div class="col-md-2"></div>-->
+			    <div class="col-md-6">
+				<ul class="wizard pull-left" style="margin-top:0px;">
+                                    <t t-foreach="sub_categories" t-as="sub_categ">
+                                        <t t-if="sub_categ.sub_categ_id.id == sub_categ_id">
+                                            <li class="text-primary" style="padding-left:13px;padding-right:5px;">
+                                                <t t-esc="sub_categ.sub_categ_id.name"/> (<t t-esc="sub_categ.max_products"/>)<span class="chevron"></span>
+                                            </li>
+                                        </t>
+                                        <t t-if="not sub_categ.sub_categ_id.id == sub_categ_id">
+                                             <li class="text-muted" style="padding-left:13px;padding-right:5px;">
+                                                <t t-esc="sub_categ.sub_categ_id.name"/> (<t t-esc="sub_categ.max_products"/>)<span class="chevron"></span>
+                                             </li>
+                                        </t>
+                                     </t>
+                                </ul>
+				<!--<table>
+				    <tr>
+					<t t-foreach="sub_categories" t-as="sub_categ">
+					    <t t-if="sub_categ.sub_categ_id.id == sub_categ_id">
+						<td style="border:1px solid;background-color:orange;color:white"><t t-esc="sub_categ.sub_categ_id.name"/></td>
+					    </t>
+					    <t t-if="not sub_categ.sub_categ_id.id == sub_categ_id">
+					        <td style="border:1px solid;background-color:#337ab7;color:white"><t t-esc="sub_categ.sub_categ_id.name"/></td>
+					    </t>
+					    <td><![CDATA[&nbsp;&nbsp;]]></td>
+					</t>
+				    </tr>
+				</table>-->
+			    </div>
+			    <div clear="both"/>
+			</div>			
+			<div id="wrap" class="oe_structure oe_empty">
+	                    <!-- snippet area-->
+        	        </div>
+		        <p><br/><br/><br/><br/></p>
+			<div id="wrap" class="oe_structure oe_empty">
+                            <!-- snippet area-->
+                        </div>
+		        <div id="wrap">
+			<div class="oe_product_cart">
+			    <div style="float:right">
+				<t t-if="view_all">
+				    <a class="btn btn-primary" t-attf-href="/beverages/{{bar}}/{{project_id}}/products/all">View All</a>
+				</t>
+				<t t-if="view_mode == 'grid' ">
+	                            <button id="products_list_button" type="submit" class="btn btn-primary" t-attf-onclick="view_mode_list()">View List</button>
+				</t>
+				<t t-if="view_mode == 'list' ">
+        	                    <button id="products_grid_button" type="submit" class="btn btn-primary" t-attf-onclick="view_mode_grid()">View Grid</button>
+				</t>
+                	    </div>
+			    <div id="wrap" class="oe_structure oe_empty">
+                                <!-- snippet area-->
+                            </div>
+			    <p><br/></p>
+			    <div id="wrap" class="oe_structure oe_empty">
+                                <!-- snippet area-->
+                            </div>
+			    <t t-if="view_mode == 'grid'">
+			    <div id="products_grid_view">
+				<div style="margin: 0px 10px;" class="oe_product_image"><!--- 190 44 -->
+                                    <t t-if="standard_products">
+					<div id="wrap" class="oe_structure oe_empty">
+	                                    <!-- snippet area-->
+        	                        </div>
+					<center><h4>Standard Beverages</h4></center>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+					<table style="border-collapse: collapse;"><!-- 55% -->
+                                        <t t-foreach="standard_products" t-as="product_list">
+					    <tr>
+					    <t t-foreach="product_list" t-as="product">				
+					
+					    <td class="oe_product oe_grid oe-height-2" style="width:20%;max-width:20%;">
+
+					    <center>
+						<t t-if="product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'max-width:50%'}"/>
+						</t>
+						<t t-if="not product.product_product_id.image_medium">
+						    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'margin:15px;'}"/>
+						</t>
+					    </center>
+					    <div style="margin-left:10px;">				    
+ 	                                           <t style="margin-left:10px;" t-esc="product.product_product_id.name"/><br/>
+					    </div>
+					    <div style="float:left;margin-left:10px;">
+						<p></p><b><t>R 0.00</t></b>
+					    </div>
+					    <div style="float:left;margin-left:20px;">
+						<t t-if="not product.button_invisible">
+						<p></p><input type="button" class="btn btn-default btn-primary mb32 a-submit select" value="Select" t-attf-onclick="add_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="add_product_id" style="display:block;padding:0px 10px 0px 10px;"/>
+						</t>
+						<t t-if="product.remove_button_visible">
+                                                <p></p><input type="button" class="btn btn-default mb32 a-submit select" value="Remove" t-attf-onclick="remove_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="remove_product_id" style="display:block;padding:0px 10px 0px 10px;background-color:red;"/>
+						</t>
+					    </div>
+					    </td>
+					    </t>
+					    <t t-if="len(product_list) == 4">
+						<td style="width:20%;max-width:20%;"></td>
+					    </t>
+					    <t t-if="len(product_list) == 3">
+                                                <td style="width:20%;max-width:20%;"></td>
+						<td style="width:20%;max-width:20%;"></td>
+                                            </t>
+					    <t t-if="len(product_list) == 2">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+						<td style="width:20%;max-width:20%;"></td>
+                                            </t>
+					    <t t-if="len(product_list) == 1">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+					    </tr>
+                                        </t>
+					</table>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                    </t>
+
+                                    <t t-if="premium_products">
+					<hr/>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+					<center><h4>Premium Beverages</h4></center>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <table style="border-collapse: collapse;"><!-- 55% -->
+                                        <t t-foreach="premium_products" t-as="product_list">
+                                            <tr>
+                                            <t t-foreach="product_list" t-as="product">
+
+                                            <td class="oe_product oe_grid oe-height-2" style="width:20%;">
+                                            <center>
+						<t t-if="product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'max-width:50%;'}"/>
+						</t>
+						<t t-if="not product.product_product_id.image_medium">
+						    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'margin:15px;'}"/>
+						</t>
+					    </center>
+					    <div style="margin-left:10px;">
+                                                <t style="margin-left:10px;" t-esc="product.product_product_id.name"/><br/>
+					    </div>
+					    <div style="float:left;margin-left:10px;">
+						<p></p><b>R <t t-esc="'%.2f'%(product.product_product_id.list_price)"/></b>
+					    </div>
+					    <div style="float:left;margin-left:20px;">
+						<t t-if="not product.button_invisible">
+						<p></p><input type="button" class="btn btn-default btn-primary mb32 a-submit select" value="Purchase" t-attf-onclick="add_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="add_product_id" style="display:block;padding:0px 10px 0px 10px;"/>	
+						</t>
+						<t t-if="product.remove_button_visible">
+                                                <p></p><input type="button" class="btn btn-default mb32 a-submit select" value="Remove" t-attf-onclick="remove_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="remove_product_id" style="display:block;padding:0px 10px 0px 10px;background-color:red;"/>
+						</t>
+					    </div>
+                                            </td>
+                                            </t>
+					    <t t-if="len(product_list) == 4">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            <t t-if="len(product_list) == 3">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            <t t-if="len(product_list) == 2">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+					    <t t-if="len(product_list) == 1">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            </tr>
+                                        </t>
+                                        </table>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                    </t>
+				</div>
+			    </div>
+			    <!-- Jagadeesh added MAY24 to display all products with categ name-->
+                            <div id="all_products_grid_view">
+                                <div style="margin: 0px 10px;" class="oe_product_image"><!--- 190 44 -->
+                                    <t t-if="all_standard_products_grid">
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <center><h4>Standard Beverages</h4></center>                                        
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <t t-foreach="all_standard_products_grid" t-as="product_dic">
+					    <center><h2><t t-esc="product_dic['categ_name']"/></h2></center>
+					    <table style="border-collapse: collapse;">
+					    <t t-foreach="product_dic['beverages']" t-as="product_list">
+                                            <tr>
+                                            <t t-foreach="product_list" t-as="product">
+
+                                            <td class="oe_product oe_grid oe-height-2" style="width:20%;max-width:20%;">
+
+                                            <center>
+                                                <t t-if="product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'max-width:50%'}"/>
+                                                </t>
+                                                <t t-if="not product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'margin:15px;'}"/>
+                                                </t>
+                                            </center>
+                                            <div style="margin-left:10px;">
+                                                   <t style="margin-left:10px;" t-esc="product.product_product_id.name"/><br/>
+                                            </div>
+                                            <div style="float:left;margin-left:10px;">
+                                                <p></p><b><t>R 0.00</t></b>
+                                            </div>
+                                            <div style="float:left;margin-left:20px;">
+                                                <t t-if="not product.button_invisible">
+                                                <p></p><input type="button" class="btn btn-default btn-primary mb32 a-submit select" value="Select" t-attf-onclick="add_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="add_product_id" style="display:block;padding:0px 10px 0px 10px;"/>
+                                                </t>
+                                                <t t-if="product.remove_button_visible">
+                                                <p></p><input type="button" class="btn btn-default mb32 a-submit select" value="Remove" t-attf-onclick="remove_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="remove_product_id" style="display:block;padding:0px 10px 0px 10px;background-color:red;"/>
+                                                </t>
+                                            </div>
+                                            </td>
+                                            </t>
+                                            <t t-if="len(product_list) == 4">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            <t t-if="len(product_list) == 3">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            <t t-if="len(product_list) == 2">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            <t t-if="len(product_list) == 1">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            </tr>
+                                            </t>
+                                            </table>
+					</t>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                    </t>
+                                    <t t-if="all_premium_products_grid">
+                                        <hr/>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <center><h4>Premium Beverages</h4></center>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <t t-foreach="all_premium_products_grid" t-as="product_dic">
+					    <center><h2><t t-esc="product_dic['categ_name']"/></h2></center>
+					    <table style="border-collapse: collapse;">
+					    <t t-foreach="product_dic['beverages']" t-as="product_list">
+                                            <tr>
+                                            <t t-foreach="product_list" t-as="product">
+
+                                            <td class="oe_product oe_grid oe-height-2" style="width:20%;">
+                                            <center>
+                                                <t t-if="product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'max-width:50%;'}"/>
+                                                </t>
+                                                <t t-if="not product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'margin:15px;'}"/>
+                                                </t>
+                                            </center>
+                                            <div style="margin-left:10px;">
+                                                <t style="margin-left:10px;" t-esc="product.product_product_id.name"/><br/>
+                                            </div>
+                                            <div style="float:left;margin-left:10px;">
+                                                <p></p><b>R <t t-esc="'%.2f'%(product.product_product_id.list_price)"/></b>
+                                            </div>
+                                            <div style="float:left;margin-left:20px;">
+                                                <t t-if="not product.button_invisible">
+                                                <p></p><input type="button" class="btn btn-default btn-primary mb32 a-submit select" value="Purchase" t-attf-onclick="add_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="add_product_id" style="display:block;padding:0px 10px 0px 10px;"/>
+                                                </t>
+                                                <t t-if="product.remove_button_visible">
+                                                <p></p><input type="button" class="btn btn-default mb32 a-submit select" value="Remove" t-attf-onclick="remove_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="remove_product_id" style="display:block;padding:0px 10px 0px 10px;background-color:red;"/>
+                                                </t>
+                                            </div>
+                                            </td>
+                                            </t>
+                                            <t t-if="len(product_list) == 4">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            <t t-if="len(product_list) == 3">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            <t t-if="len(product_list) == 2">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            <t t-if="len(product_list) == 1">
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                                <td style="width:20%;max-width:20%;"></td>
+                                            </t>
+                                            </tr>
+                                            </t>
+                                            </table>
+					</t>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                    </t>
+				</div>
+			    </div>
+			    <!--- Jagadeesh MAY24 end -->
+			    </t>
+			    <t t-if="view_mode == 'list' ">
+			    <div id="products_list_view">
+				<div style="margin: 0px 10px;" class="oe_product_image">
+                                    <t t-if="standard_products_list">
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <center><h4>Standard Beverages</h4></center>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <table style="border-collapse: None;" class="table table-condensed">
+                                        <t t-foreach="standard_products_list" t-as="product">
+                                            <tr>
+
+                                            <td class="oe_product oe_grid oe-height-2" style="width:20%;max-width:20%;">
+                                            <div>
+                                            <div class="col-md-4">
+                                            <center>
+                                                <t t-if="product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'max-width:50%;width:100px;'}"/>
+                                                </t>
+                                                <t t-if="not product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'margin:15px;width:50px;'}"/>
+                                                </t>
+                                            </center>
+                                            </div>
+					    <div class="col-md-2"/>
+                                            <div class="col-md-6">
+                                            <div style="margin-left:10px;">
+                                                   <t style="margin-left:10px;" t-esc="product.product_product_id.name"/><br/>
+                                            </div>
+                                            <div style="float:left;margin-left:10px;">
+						<p></p><b><t>R 0.00</t></b>
+                                            </div>
+                                            <div style="float:left;margin-left:20px;">
+                                                <t t-if="not product.button_invisible">
+                                                <p></p><input type="button" class="btn btn-default btn-primary mb32 a-submit select" value="Select" t-attf-onclick="add_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="add_product_id" style="display:block;padding:0px 10px 0px 10px;"/>
+                                                </t>
+						<t t-if="product.remove_button_visible">
+                                                <p></p><input type="button" class="btn btn-default mb32 a-submit select" value="Remove" t-attf-onclick="remove_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="remove_product_id" style="display:block;padding:0px 10px 0px 10px;background-color:red;"/>
+                                                </t>
+                                            </div>
+                                            </div>
+                                            </div>
+                                            </td>
+                                            </tr>
+                                        </t>
+                                        </table>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                    </t>
+                                    <t t-if="premium_products_list">
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <center><h4>Premium Beverages</h4></center>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <table style="border-collapse: None;" class="table table-condensed">
+                                        <t t-foreach="premium_products_list" t-as="product">
+                                            <tr>
+
+                                            <td class="oe_product oe_grid oe-height-2" style="width:20%;max-width:20%;">
+                                            <div>
+                                            <div class="col-md-4">
+                                            <center>
+                                                <t t-if="product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'max-width:50%;width:100px;'}"/>
+                                                </t>
+                                                <t t-if="not product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'margin:15px;width:50px'}"/>
+                                                </t>
+                                            </center>
+                                            </div>
+					    <div class="col-md-2"/>
+                                            <div class="col-md-6">
+                                            <div style="margin-left:10px;">
+                                                   <t style="margin-left:10px;" t-esc="product.product_product_id.name"/><br/>
+                                            </div>
+                                            <div style="float:left;margin-left:10px;">
+						<p></p><b>R <t t-esc="'%.2f'%(product.product_product_id.list_price)"/></b>
+                                            </div>
+                                            <div style="float:left;margin-left:20px;">
+                                                <t t-if="not product.button_invisible">
+                                                <p></p><input type="button" class="btn btn-default btn-primary mb32 a-submit select" value="Select" t-attf-onclick="add_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="add_product_id" style="display:block;padding:0px 10px 0px 10px;"/>
+                                                </t>
+						<t t-if="product.remove_button_visible">
+                                                <p></p><input type="button" class="btn btn-default mb32 a-submit select" value="Remove" t-attf-onclick="remove_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="remove_product_id" style="display:block;padding:0px 10px 0px 10px;background-color:red;"/>
+                                                </t>
+                                            </div>
+                                            </div>
+                                            </div>
+                                            </td>
+                                            </tr>
+                                        </t>
+                                        </table>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                    </t>
+
+				</div>
+			    </div>
+			    <!-- Jagadeesh MAY24 start-->
+                            <div id="all_products_list_view">
+                                <div style="margin: 0px 10px;" class="oe_product_image">
+                                    <t t-if="all_standard_products_list">
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <center><h4>Standard Beverages</h4></center>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+					<t t-foreach="all_standard_products_list" t-as="product_dic">
+					<center><h2><t t-esc="product_dic['categ_name']"/></h2></center>
+                                        <table style="border-collapse: None;" class="table table-condensed">
+                                        <t t-foreach="product_dic['beverages']" t-as="products_list">
+					<t t-foreach="products_list" t-as="product">
+                                            <tr>
+
+                                            <td class="oe_product oe_grid oe-height-2" style="width:20%;max-width:20%;">
+                                            <div>
+                                            <div class="col-md-4">
+                                            <center>
+                                                <t t-if="product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'max-width:50%;width:100px;'}"/>
+                                                </t>
+                                                <t t-if="not product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'margin:15px;width:50px;'}"/>
+                                                </t>
+                                            </center>
+                                            </div>
+                                            <div class="col-md-2"/>
+                                            <div class="col-md-6">
+                                            <div style="margin-left:10px;">
+                                                   <t style="margin-left:10px;" t-esc="product.product_product_id.name"/><br/>
+                                            </div>
+                                            <div style="float:left;margin-left:10px;">
+                                                <p></p><b><t>R 0.00</t></b>
+                                            </div>
+                                            <div style="float:left;margin-left:20px;">
+                                                <t t-if="not product.button_invisible">
+                                                <p></p><input type="button" class="btn btn-default btn-primary mb32 a-submit select" value="Select" t-attf-onclick="add_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="add_product_id" style="display:block;padding:0px 10px 0px 10px;"/>
+                                                </t>
+                                                <t t-if="product.remove_button_visible">
+                                                <p></p><input type="button" class="btn btn-default mb32 a-submit select" value="Remove" t-attf-onclick="remove_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="remove_product_id" style="display:block;padding:0px 10px 0px 10px;background-color:red;"/>
+                                                </t>
+                                            </div>
+                                            </div>
+                                            </div>
+                                            </td>
+                                            </tr>
+                                            </t>
+					    </t>
+                                            </table>
+					</t>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                    </t>
+                                    <t t-if="all_premium_products_list">
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                        <center><h4>Premium Beverages</h4></center>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+					<t t-foreach="all_premium_products_list" t-as="product_dic">
+					<center><h2><t t-esc="product_dic['categ_name']"/></h2></center>
+                                        <table style="border-collapse: None;" class="table table-condensed">
+                                        <t t-foreach="product_dic['beverages']" t-as="products_list">
+					<t t-foreach="products_list" t-as="product">
+                                            <tr>
+
+                                            <td class="oe_product oe_grid oe-height-2" style="width:20%;max-width:20%;">
+                                            <div>
+                                            <div class="col-md-4">
+                                            <center>
+                                                <t t-if="product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'max-width:50%;width:100px;'}"/>
+                                                </t>
+                                                <t t-if="not product.product_product_id.image_medium">
+                                                    <span itemprop="image" t-field="product.product_product_id.image_medium" t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'margin:15px;width:50px'}"/>
+                                                </t>
+                                            </center>
+                                            </div>
+                                            <div class="col-md-2"/>
+                                            <div class="col-md-6">
+                                            <div style="margin-left:10px;">
+                                                   <t style="margin-left:10px;" t-esc="product.product_product_id.name"/><br/>
+                                            </div>
+                                            <div style="float:left;margin-left:10px;">
+                                                <p></p><b>R <t t-esc="'%.2f'%(product.product_product_id.list_price)"/></b>
+                                            </div>
+                                            <div style="float:left;margin-left:20px;">
+                                                <t t-if="not product.button_invisible">
+                                                <p></p><input type="button" class="btn btn-default btn-primary mb32 a-submit select" value="Select" t-attf-onclick="add_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="add_product_id" style="display:block;padding:0px 10px 0px 10px;"/>
+                                                </t>
+                                                <t t-if="product.remove_button_visible">
+                                                <p></p><input type="button" class="btn btn-default mb32 a-submit select" value="Remove" t-attf-onclick="remove_product('#{project_id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{beverage_menu}')" id="remove_product_id" style="display:block;padding:0px 10px 0px 10px;background-color:red;"/>
+                                                </t>
+                                            </div>
+                                            </div>
+                                            </div>
+                                            </td>
+                                            </tr>
+                                            </t>
+					    </t>
+                                           </table>
+					</t>
+					<div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+			    <!-- Jagadeesh MAY24 end -->
+			    </t>
+			</div>
+			<div>
+				    <!-- Jagadeesh start -->
+				    <div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                    </div>
+				    <p><br/></p>
+				    <div style="float:left">
+					<t t-if="page_prev">
+			                    <a class="btn btn-primary" href="/beverage_selection/prev">&lt;&lt; Prev</a>
+					</t>
+				    </div>
+			            <div style="float:right">
+					<t t-if="page_next">
+			                    <a class="btn btn-primary" href='/beverage_selection/next'>Next &gt;&gt; </a>
+					</t>
+					<t t-if="not page_next and finished">					    
+					    <!--<a class="btn btn-primary" href='/beverage_selection/%s/complete' %(bar)>I'm Finished</a>-->
+					    <t t-if="bar == 'full_bar'">
+						<a class="btn btn-primary" t-attf-href="/beverage_selection/full_bar/complete/{{project_id}}">I'm Finished</a>
+					    </t>
+					    <t t-if="bar == 'cocktail_bar'">
+						<a class="btn btn-primary" t-attf-href="/beverage_selection/cocktail_bar/complete/{{project_id}}">I'm Finished</a>
+					    </t>
+					</t>
+			            </div>
+			            <div clear="both"/>
+				    <div id="wrap" class="oe_structure oe_empty">
+                                            <!-- snippet area-->
+                                    </div>
+				    <p><br/><br/></p>
+				    <!-- Jagadeesh end -->
+                        </div>
+			<!--<t t-if="prod1">
+                                <span><t t-esc="prod1"/></span>
+                        </t>
+
+
+		        <t t-if="error">
+                                <span><t t-esc="error"/></span>
+                        </t>-->
+			</div>
+			<div id="wrap" class="oe_structure oe_empty">
+                            <!-- snippet area-->
+                        </div>
+                </div>		   
+		
+		<div class="col-md-3 hidden-print">
+                      <div class="bs-sidebar">			
+			 <table class="table table-responsive" id="standard_beverages_table">
+               		    <tbody>
+				<tr><td style="background-color:lightgray; color:green;">Standard Selected Beverages</td></tr>
+				<t t-foreach="standard_selected_bevs" t-as="bev">
+                                    <tr><td style="border-bottom:none;color:red"><span t-esc="bev['categ_name']"/></td></tr>
+                                    <t t-foreach="bev['selected_beverages']" t-as="beverage">
+                                        <tr><td style="border-bottom:none;border-top:none;"><span t-esc="beverage.name"/></td></tr>
+                                    </t>
+				</t>
+		            </tbody>
+		        </table>
+			<table class="table table-responsive" id="premium_beverages_table">
+                            <tbody>
+                                <tr><td colspan="2" style="background-color:lightgray; color:green;">Premium Selected Beverages</td></tr>
+                                <t t-foreach="premium_selected_bevs" t-as="bev">
+                                    <tr><td colspan="2" style="border-bottom:none;color:red"><span t-esc="bev['categ_name']"/></td></tr>
+                                    <t t-foreach="bev['selected_beverages']" t-as="beverage">
+                                        <tr>
+					    <td style="border-bottom:none;border-top:none;border-right:none;"><span t-esc="beverage.name"/></td>
+					    <td style="border-bottom:none;border-top:none;border-left:none;">R <span t-esc="beverage.list_price"/></td>				
+					</tr>
+                                    </t>
+                                </t>
+				<tr style="background-color:red">
+				    <td>Total Extra Amount : </td><td>R <span t-esc="total_premium_amount"/></td>
+				</tr>
+                            </tbody>
+                        </table>
+			<table class="table table-responsive" id="beverages_table"><tbody></tbody></table>
+		      </div>
+		</div>
+	</div>
+</t>	
+ <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"/>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"/>
+  <script>
+     
+      function view_mode_list()
+      {
+	url = '/products/view/list'
+
+	jQuery.ajax({
+		url  : url,
+		type : 'POST',
+		data : {},
+		success : function(response){
+		    response = jQuery.parseJSON(response)
+		    if (response.flag == 1){
+			location.reload();
+		    }
+		}
+	});
+      }
+
+
+      function view_mode_grid()
+      {
+        url = '/products/view/grid'
+
+        jQuery.ajax({
+                url  : url,
+                type : 'POST',
+                data : {},
+                success : function(response){
+                    response = jQuery.parseJSON(response)
+                    if (response.flag == 1){
+                        location.reload();
+                    }
+                }
+        });
+      }
+
+
+      function add_product(project_id,bev_menu_product_id,product_id,product_name,sub_categ_id,sub_categ_name,prod_type,beverage_menu)
+      {
+
+        url = '/add/'+project_id+'/'+beverage_menu+'/'+product_id
+
+        jQuery.ajax({
+                url : url,
+                type: 'POST',
+                data:{bev_menu_product_id:bev_menu_product_id,product_id:product_id,sub_categ_id:sub_categ_id,prod_type:prod_type},
+                success:function(response){
+                    response = jQuery.parseJSON(response)
+                    if (response.flag==0){
+                        alert('cannot add more than maximum products for same sub category')
+                    }
+                    else if(response.flag == 1){
+                        //$('#member_table tbody').append("<tr><td><b>"+sub_categ_name+"</b></td></tr><tr><td>"+product_name+"</td></tr>")
+                        //$('#beverages_table tbody').append("<tr><td>"+product_name+"</td></tr>")
+                        location.reload();
+
+                    }
+                }
+        });
+
+        }
+
+
+      function remove_product(project_id,bev_menu_product_id,product_id,product_name,sub_categ_id,sub_categ_name,prod_type,beverage_menu)
+      {
+
+        url = '/remove/'+project_id+'/'+beverage_menu+'/'+product_id
+
+        jQuery.ajax({
+                url : url,
+                type: 'POST',
+                data:{bev_menu_product_id:bev_menu_product_id,product_id:product_id,sub_categ_id:sub_categ_id,prod_type:prod_type},
+                success:function(response){
+                    response = jQuery.parseJSON(response)
+                    if (response.flag == 0){
+                        alert('')
+                    }
+                    else if(response.flag == 1){
+                        location.reload();
+
+                    }
+                }
+        });
+        }
+
+
+
+	//$(document).ready(function(){
+    	//    $(".select").click(function(){
+        //         $(this).hide();
+        //    });
+        //});
+    
+     
+      </script>
+</template>
+
+<template id="add_product_validate" name="Add Product">
+    <div class="modal-dialog">
+        <div class="alert alert-danger" role="alert">
+            <button style="float:right;" class="btn btn-link" data-dismiss="modal">x</button>
+            <div style="clear:both;"/>
+            <center>Can't select more than two products of same sub category.</center>
+        </div>
+    </div>
+</template>
+<template id="beverages_selection_complete" name="Beverages Selection Complete">
+    <t t-call="website.layout">
+	<div class="alert alert-success" role="alert">
+                <center>All Your selected beverages successfully added.</center>
+        </div>
+	<t t-if="cocktail_bar">
+	    <a class="btn btn-primary" t-attf-href="/beverage_selection/cocktail_bar/{{project_id}}">Go to Cocktail bar beverage selection</a>
+	</t>
+    </t>
+</template>
+</odoo>	
+
