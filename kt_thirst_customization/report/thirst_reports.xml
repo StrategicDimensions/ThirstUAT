@@ -1,0 +1,48 @@
+<odoo>
+	<report id="report_stock_sheet"
+		string="Stock Sheet"
+		model="project.project"
+		report_type="qweb-pdf"
+		file="kt_thirst_customization.report_stocksheet"
+		name="kt_thirst_customization.report_stocksheet"
+	/>
+
+	<report id="report_project_staff"
+                string="Staff Report"
+                model="project.project"
+                report_type="qweb-pdf"
+                file="kt_thirst_customization.report_projectstaff"
+                name="kt_thirst_customization.report_projectstaff"
+        />
+
+        <report id="report_staff_costing"
+                string="Staff Costing"
+                model="project.project"
+                report_type="qweb-pdf"
+                file="kt_thirst_customization.report_staffcosting"
+                name="kt_thirst_customization.report_staffcosting"
+        />
+
+         <record id="staff_sheet_paper_format" model="report.paperformat">
+            <field name="name">Staff Sheet</field>
+            <field name="default" eval="True" />
+            <field name="format">custom</field>
+            <field name="page_height">250</field>
+            <field name="page_width">200</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">30</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">55</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="kt_thirst_customization.report_project_staff" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="kt_thirst_customization.staff_sheet_paper_format" />
+        </record>
+
+
+</odoo>
+	
