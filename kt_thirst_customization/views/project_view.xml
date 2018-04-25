@@ -217,7 +217,7 @@
                             </tree>
                         </field>
                     </page>
-		    <page string="Consumables">
+		    <page string="Consumables" invisible="1">
                         <field name="consumable_beverage_ids">
                             <tree create="true" delete="true">
                                 <field name="product_id" />
@@ -247,7 +247,7 @@
                             </form>
                         </field>
 		    </page>
-		    <page string="Equipment">
+		    <page string="Equipment" invisible="1">
                         <field name="equipment_beverage_ids">
                             <tree create="true" delete="true">
                                 <field name="product_id" />
