@@ -276,13 +276,13 @@ class Project(models.Model):
     def _compute_stock_picking_count(self):
         Picking = self.env['stock.picking']
         for project in self:
-            project.stock_picking_count = Picking.search_count([('origin', '=', project.name)])
+            project.stock_picking_count = Picking.search_count([('origin', '=', project.project_number)])
 
     @api.multi
     def view_stock_picking(self):
         self.ensure_one()
         action = self.env.ref('stock.action_picking_tree_all').read()[0]
-        pickings = self.env['stock.picking'].search([('origin', '=', self.name)])
+        pickings = self.env['stock.picking'].search([('origin', '=', self.project_number)])
         action['domain'] = [('id', 'in', pickings.ids)]
         return action
 
