@@ -403,12 +403,15 @@
 	    <field name="model">project.project</field>
 	    <field name="inherit_id" ref="project.view_project"/>
 	    <field name="arch" type="xml">
+        <xpath expr="//tree" position="attributes">
+            <attribute name="default_order">id desc</attribute>
+        </xpath>
 		<field name="user_id" position="before">
 		    <field name="project_number"/>
 		    <field name="function_type"/>
-                    <field name="no_of_people"/>
-                    <field name="time_start"/>
-                    <field name="time_end"/>
+            <field name="no_of_people"/>
+            <field name="time_start"/>
+            <field name="time_end"/>
 		    <field name="sale_order_id"/>
 		</field>
 		<field name="name" position="replace"/>
