@@ -91,13 +91,17 @@
 	 	</xpath>
 	        <!-- pos orders button -->
 		<xpath expr="//div[@name='button_box']/button[2]" position="after">
-                    <button class="oe_stat_button" type="action" name="%(act_project_pos_orders_all)d" icon="fa-shopping-cart">
+            <button class="oe_stat_button" type="action" name="%(act_project_pos_orders_all)d" icon="fa-shopping-cart">
 		        <field name="pos_orders_amount" string="POS Orders" widget="statinfo"/>
 		    </button>
 
 		    <button class="oe_stat_button" type="action" name="%(beverages.beverages_selection_action)d" icon="fa-shopping-cart">
                         <field name="selected_beverages" string="Selected Beverages" widget="statinfo" domain="[('project_id','=',active_id)]"/>
-                    </button>
+            </button>
+
+            <button class="oe_stat_button" type="object" name="view_stock_picking" icon="fa-truck">
+                <field name="stock_picking_count" string="Stock Transfers" widget="statinfo"/>
+            </button>
 
 		    <!--<button style="text-align:center;" class="oe_stat_button oe_inline" string="Print Stock List" />-->
 		    <!--<button class="oe_stat_button" type="object" name="send_sms" string="Send SMS"/>-->

@@ -271,6 +271,20 @@ class Project(models.Model):
                                            (5,'Function event location - Vehicle'),(6,'Vehicle - Cage'),
                                            (7,'Cage - Function internal location'),(8,'Function internal location - Stock')],default=1)
     division_ids = fields.Many2many('division.division','project_div_rel','project_id','div_id',string="Division")
+    stock_picking_count = fields.Integer(compute="_compute_stock_picking_count", string="Picking Count")
+
+    def _compute_stock_picking_count(self):
+        Picking = self.env['stock.picking']
+        for project in self:
+            project.stock_picking_count = Picking.search_count([('origin', '=', project.name)])
+
+    @api.multi
+    def view_stock_picking(self):
+        self.ensure_one()
+        action = self.env.ref('stock.action_picking_tree_all').read()[0]
+        pickings = self.env['stock.picking'].search([('origin', '=', self.name)])
+        action['domain'] = [('id', 'in', pickings.ids)]
+        return action
 
     @api.multi
     def _get_consumable_beverage_ids(self):
