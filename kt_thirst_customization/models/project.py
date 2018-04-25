@@ -1,4 +1,4 @@
-from odoo import models,fields,api,osv
+from odoo import models,fields,api,osv, _
 from odoo.exceptions import RedirectWarning, UserError, ValidationError
 import urllib
 #Need to install below package
@@ -568,9 +568,11 @@ class Project(models.Model):
     @api.multi
     def transfer_stock_to_function_location(self,stock_pick_id=False):
         if not self.cage:
-            raise ValidationError('Please select Cage')
+            raise UserError(_("Please ensure that The Cage, Vehicle fields and the Beverage Selection are completed."))
         if not self.vehicle:
-            raise ValidationError('Please select Vehicle')
+            raise UserError(_("Please ensure that The Cage, Vehicle fields and the Beverage Selection are completed."))
+        if not any(selection.is_completed for selection in self.beverages_selection_ids):
+            raise UserError(_("Please ensure that The Cage, Vehicle fields and the Beverage Selection are completed."))
         if not self.time_start:
             raise ValidationError('Please select event start date')
         if not self.time_end:
