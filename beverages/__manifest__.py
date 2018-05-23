@@ -10,7 +10,9 @@
     'description': """ Beverages Settings and Configurations""",
     'website': 'http://www.strategicdimensions.co.za/',
     'depends': ['base','sale', 'account', 'procurement', 'report', 'web_tour'],
-    'data': ['views/beverages.xml'
+    'data': [
+        'security/ir.model.access.csv',
+        'views/beverages.xml',
     ],
     #'css': ['static/src/css/sale.css'],
     'installable': True,

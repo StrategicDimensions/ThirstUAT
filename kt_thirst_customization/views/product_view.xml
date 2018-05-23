@@ -20,9 +20,9 @@
             <field name="arch" type="xml">
 				<field name="type" position="after">
                     <field name="classification" widget="radio"/>
-		    		<field name="sap_stock_code"/>
                 </field>
 				<field name="categ_id" position="after">
+					<field name="sap_stock_code"/>
 					<field name="sap_code"/>
 				</field>	
 		<!--<xpath expr="//header" position="inside">
@@ -44,5 +44,16 @@
             <field name="name">Import Product Images</field>
             <field eval="'ir.actions.server,%d'%action_import_product_images" name="value"/>
         </record>
+
+		<record id="product_category_form_view_inherit_thirst" model="ir.ui.view">
+		    <field name="name">product.category.form.view.inherit.thirst</field>
+		    <field name="model">product.category</field>
+		    <field name="inherit_id" ref="product.product_category_form_view"/>
+	            <field name="arch" type="xml">
+					<field name="type" position="after">
+	                    <field name="print_on"/>
+	                </field>
+		    	</field>
+		</record>	
 
 </odoo>

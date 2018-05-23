@@ -38,6 +38,12 @@ class BarExperience(http.Controller):
 	    project = project_obj.sudo().write({'order_ids':[(6,0,order.order_line.ids)]})
 	    #project = project_obj.sudo().write({'order_ids':[(6,0,order.order_line.ids)],'amount_untaxed':order.amount_untaxed,'amount_tax':order.amount_tax,'amount_total':order.amount_total})
 	return request.redirect('/shop/')
+    
+    @http.route('/page/get-a-quote', type='http', auth="public", website=True)
+    def get_a_quote(self, **post):
+        return request.render('kt_thirst_customization.get-a-quote')
+        
+    
 
 class SendSMS(http.Controller):
     @http.route(['/send/sms'],type="http",auth="public",website=True)
@@ -316,28 +322,28 @@ class BeverageSelection(http.Controller):
 	@http.route(['/beverage_selection/<bar>/complete/<project>'],type='http',auth="public", website=True)
         def beverage_selection_complete(self,bar,project,**post):
 	    #project_id = request.session['last_project_id']
-	    project_id = int(project)
-	    request.session.update({'last_project_id':project_id})
+            project_id = int(project)
+            request.session.update({'last_project_id':project_id})
             project_obj = request.env['project.project'].sudo().browse(project_id)
-	    sale_order_obj = project_obj.sale_order_id
-	    if bar == 'full_bar':
-		'''sending email to customer after completion of full bar beverages selection'''
-		project_obj.send_email_fullbar_beverages_selection()
-		bev_menu_id = request.env['beverages'].sudo().search([('name','=','Full Bar Beverage Menu')])
-		#sale_order_obj.full_bar_selection_completed = True
-	    else:
-		'''sending email to customer after completion of cocktail bar beverages selection'''
-		project_obj.send_email_cocktailbar_beverages_selection()
-		bev_menu_id = request.env['beverages'].sudo().search([('name','=','Cocktail Bar Beverage Menu')])
-		#sale_order_obj.cocktail_bar_selection_completed = True	
-	    bev_select_obj = request.env['beverages.selection'].sudo().search([('project_id','=',project_id),('beverage_menu_id','=',bev_menu_id.id)])
+            sale_order_obj = project_obj.sale_order_id
+            if bar == 'full_bar':
+                '''sending email to customer after completion of full bar beverages selection'''
+                project_obj.send_email_fullbar_beverages_selection()
+                bev_menu_id = request.env['beverages'].sudo().search([('name','=','Full Bar Beverage Menu')])
+                #sale_order_obj.full_bar_selection_completed = True
+            else:
+                '''sending email to customer after completion of cocktail bar beverages selection'''
+                project_obj.send_email_cocktailbar_beverages_selection()
+                bev_menu_id = request.env['beverages'].sudo().search([('name','=','Cocktail Bar Beverage Menu')])
+                #sale_order_obj.cocktail_bar_selection_completed = True	
+            bev_select_obj = request.env['beverages.selection'].sudo().search([('project_id','=',project_id),('beverage_menu_id','=',bev_menu_id.id)])
             bev_select_obj.is_completed = True
             bev_select_obj.date_completed = datetime.now()
 	    #cocktail_bar = False
 
 	    #updating boolean field which using for select button visibility for each product on beverage page
-	    request.cr.execute("update beverage_products set button_invisible = 'f' where button_invisible = 't'  ")
-	    request.cr.execute("update beverage_products set remove_button_visible = 'f' where remove_button_visible = 't'  ")
+            request.cr.execute("update beverage_products set button_invisible = 'f' where button_invisible = 't'  ")
+            request.cr.execute("update beverage_products set remove_button_visible = 'f' where remove_button_visible = 't'  ")
 
 	    #disable premium selection
 	    #If there are premium products adding them to shop cart by creating sale order
@@ -357,15 +363,15 @@ class BeverageSelection(http.Controller):
 	        for line in sale_order_obj.order_line:
 		    if line.product_id.name == 'Cocktail Bar':
 		        cocktail_bar = True		    '''
-	    full_bar = False
-	    shop = False
-	    if bar == 'cocktail_bar':
-	        for line in sale_order_obj.order_line:
+            full_bar = False
+            shop = False
+            if bar == 'cocktail_bar':
+                for line in sale_order_obj.order_line:
                     if line.product_id.name == 'Full Bar':
                         full_bar = True
-	    elif bar == 'full_bar':
-		shop = True
-		request.session.update({'last_project_id':project_id,'last_proj_id':project_id,'go_for_additional_beverages':True,'for_additional_budget':False,'quotation_partner_id':project_obj.sale_order_id.partner_id.id})
+            elif bar == 'full_bar':
+                shop = True
+            request.session.update({'last_project_id':project_id,'last_proj_id':project_id,'go_for_additional_beverages':True,'for_additional_budget':False,'quotation_partner_id':project_obj.sale_order_id.partner_id.id})
             return request.render('kt_thirst_customization.beverages_selection_complete',{'full_bar':full_bar,'shop':shop,'project_id':project_id})
 
 

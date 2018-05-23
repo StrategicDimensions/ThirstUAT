@@ -223,10 +223,11 @@
                                                                 <field name="prod_type" />
                                                                 <field name="category_id" />
                                                                 <field name="sub_category_id" />
-                                                                <field name="qty_required" />
+                                                                <field name="qty_required" sum="Total"/>
                                                                 <field name="uom_id"/>
                                                                 <field name="uom_po_id"/>
                                                                 <!--<field name="on_hand" />-->
+                                                                <field name="total" sum="Total"/>
 								<field name="qty_on_hand" />
                                                                 <field name="forecasted" />
                                                                 <field name="variance" />

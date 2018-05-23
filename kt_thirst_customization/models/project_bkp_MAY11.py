@@ -587,7 +587,7 @@ class ProductBomLines(models.Model):
     @api.depends('product_qty','on_hand')
     def _get_variance(self):
         for obj in self:
-            obj.variance = obj.product_qty - obj.on_hand
+            obj.variance = obj.on_hand - obj.product_qty
 
 
 

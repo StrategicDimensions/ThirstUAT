@@ -6,6 +6,16 @@ import html2text
 from datetime import datetime,timedelta,date
 
 
+class ProductCategory(models.Model):
+    _inherit = "product.category"
+
+    print_on = fields.Selection([
+        ('equipment', 'Equipment & Glassware Sheet'),
+        ('stock', 'Stock Sheet'),
+        ('bar', 'Bar Sheet'),
+    ], string="Print On")
+
+
 #Raaj
 class ResPartner(models.Model):
 	_inherit = 'res.partner'
@@ -194,7 +204,7 @@ class Project(models.Model):
 
     def _get_selected_beverages(self):
         for project in self:
-            selected_count = self.env['beverages.selection'].search([('project_id','=',self.id)])
+            selected_count = self.env['beverages.selection'].search([('project_id', '=', project.id)])
             project.selected_beverages = len(selected_count)
 
 
@@ -249,6 +259,7 @@ class Project(models.Model):
     event_staff_ids = fields.One2many('project.staff','project_event_id',string="Staffing Event")
     breakdown_staff_ids = fields.One2many('project.staff','project_breakdown_id',string="Staffing Breakdown")
     staff_readonly = fields.Boolean('Staff Readonly')
+    is_manager = fields.Boolean(compute="_compute_is_manager")
 
     #MAY03
     site_contact_name = fields.Char('Site Contact Name')
@@ -272,6 +283,14 @@ class Project(models.Model):
                                            (7,'Cage - Function internal location'),(8,'Function internal location - Stock')],default=1)
     division_ids = fields.Many2many('division.division','project_div_rel','project_id','div_id',string="Division")
     stock_picking_count = fields.Integer(compute="_compute_stock_picking_count", string="Picking Count")
+    pricelist_id = fields.Many2one("product.pricelist", string="POS Pricelist")
+
+    def _compute_is_manager(self):
+        for project in self:
+            if project.user_has_groups('account.group_account_manager') or project.user_has_groups('stock.group_stock_manager'):
+                project.is_manager = True
+            else:
+                project.is_manager = False
 
     def _compute_stock_picking_count(self):
         Picking = self.env['stock.picking']
@@ -971,7 +990,7 @@ class SelectedBeverages(models.Model):
         @api.depends('qty_required','on_hand')
         def _get_variance(self):
             for obj in self:
-                obj.variance = obj.qty_required - obj.on_hand
+                obj.variance = obj.on_hand - obj.qty_required
 
 
 class ProductBomLines(models.Model):
@@ -987,6 +1006,7 @@ class ProductBomLines(models.Model):
     on_hand = fields.Integer(string="On Hand")#qty_available
     variance = fields.Integer(compute="_get_variance",string='Variance')
     forecasted = fields.Integer(string="Forecasted")#virtual_available
+    total = fields.Float(compute="_compute_total", string="Total")
 
     @api.onchange('product_id')
     def onchange_product_id(self):
@@ -998,11 +1018,14 @@ class ProductBomLines(models.Model):
             obj.on_hand = obj.product_id.qty_available
             obj.forecasted = obj.product_id.virtual_available
 
+    def _compute_total(self):
+        for record in self:
+            record.total = record.product_id.lst_price * record.product_qty
 
     @api.depends('product_qty','on_hand')
     def _get_variance(self):
         for obj in self:
-            obj.variance = obj.product_qty - obj.on_hand
+            obj.variance = obj.on_hand - obj.product_qty
 
 
 class PosDevices(models.Model):
@@ -1019,10 +1042,12 @@ class PosDevices(models.Model):
 	else:
             raise ValidationError('This project not having function location')
 
+        self.pos_config_id.pricelist_id = self.project_id.pricelist_id
         current_session_id = self.env['pos.session'].create({
                 'user_id': self.env.uid,
                 'config_id': self.pos_config_id.id,
                 'project_id':self.project_id.id ,
+                'budget_available_amount': self.project_id.budget_available_amount
             })
         #if self.current_session_id.state != 'opened':
         #    #self.current_session_id.state = 'opened'

@@ -18,6 +18,7 @@ class CrmLead(models.Model):
     fun_start_date = fields.Date('Function Start Date')
     #fun_start_time_hr = fields.Selection(_time_hr_selection,'Function Start Time (HH)')
     fun_end_date = fields.Date('Function End Date')
+    auto_responded = fields.Boolean('Auto Responded')
 
 
     '''@api.model
@@ -25,7 +26,7 @@ class CrmLead(models.Model):
 	list1 = [('01','01'),('02','02'),('03','03'),('04','04'),('05','05'),('06','06'),('07','07'),('08','08'),('09','09')]
 	list2 = [(str(num), str(num)) for num in range(10,25)]
         return list1+list2'''
-    
+
     @api.multi
     def change_salesperson(self,lead_ids):
 	for lead_id in lead_ids:

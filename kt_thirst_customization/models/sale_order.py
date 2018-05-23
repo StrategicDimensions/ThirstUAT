@@ -1,8 +1,9 @@
 from odoo import fields,models,api
-from datetime import datetime,date
+from datetime import datetime, date, timedelta
 import odoo.addons.decimal_precision as dp
 from odoo.exceptions import UserError,ValidationError
 from odoo.http import request
+from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
 ##Raaj
@@ -21,12 +22,6 @@ class SaleOrder(models.Model):
     division_ids = fields.Many2many('division.division','quote_div_rel','quote_id','division_id',string="Division",default=lambda self: self._get_default_division_ids())
     budget_amt = fields.Float('Budget')
 
-
-    '''full_bar_selection_completed = fields.Boolean(string="Full Bar Selection Completed ?")
-    cocktail_bar_selection_completed = fields.Boolean(string="Cocktail Bar Selection Completed ?")
-    consumable_beverage_ids = fields.One2many('selected.beverages','sale_order_id',compute="_get_consumable_beverages",string="Consumables")'''
-
-
     beverage_menu_id = fields.Many2one('beverages',string="Beverage Memu") 
     premium_beverages = fields.Boolean(string="Premium Beverages ?")
     project_project_id = fields.Many2one('project.project',string="Project")
@@ -35,18 +30,46 @@ class SaleOrder(models.Model):
     lost_reason = fields.Text('Additional comments for cancel reason')
     required_reason = fields.Boolean('Required Reason ?')
     project_create = fields.Boolean('Should create project ?',default=True)
+    margin_percent = fields.Float(compute='_product_margin_percent', help="It gives profitability Percentage by calculating the difference between the Unit Price and the cost.", digits=dp.get_precision('Product Price'), store=True)
 
-    '''@api.multi
-    def _get_consumable_beverages(self):
-	beverage_ids = self.env['selected.beverages'].search([('sale_order_id','=',self.id),('classification','=','consumable')])
-	self.consumable_beverage_ids = [(6,0,[obj.id for obj in beverage_ids])]'''
+    @api.depends('margin', 'amount_untaxed')
+    def _product_margin_percent(self):
+        for order in self:
+            order.margin_percent = (order.margin * 100) / (order.amount_untaxed or 1.0)
 
+    @api.onchange('template_id')
+    def onchange_template_id(self):
+        res = super(SaleOrder, self).onchange_template_id()
+        if self.template_id:
+            days_list, hours_list = [], []
+            for each in self.template_id.quote_line:
+                if each.days and each.hours:
+                    days_list.append(each.days)
+                    hours_list.append(each.hours)
+            if days_list and hours_list:
+                i = 0
+                for each in self.order_line:
+                    prod_price_history_id = self.env['product.price.history'].search([('product_id', '=', each.product_id.id)])
+                    each.update({'days': days_list[i],
+                                 'hours': hours_list[i],
+                                 'purchase_price': prod_price_history_id.cost if prod_price_history_id else 0.0})
+                    i += 1
+        return res
 
-    @api.model
+    def open_myform(self):
+        view_id = self.env['ir.model.data'].get_object_reference('kt_thirst_customization', 'send_sms_to_lead_form')
+        return {
+                'name':("Send SMS"),
+                'view_mode': 'form',
+                'view_id': view_id[1],
+                'view_type': 'form',
+                'res_model': 'my.form',
+                'type': 'ir.actions.act_window',
+                'target': 'new',
+        }
+
     def _get_default_division_ids(self):
-            div_obj = self.env['division.division'].search([('name','=','Thirst')],limit=1)
-            return div_obj.ids
-
+        return self.env['division.division'].search([('name', '=', 'Thirst')], limit=1)
 
     @api.multi
     @api.onchange('partner_id')
@@ -82,32 +105,8 @@ class SaleOrder(models.Model):
     def write(self,vals):
         if request.session.has_key('from_quote') and request.session['from_quote']:
                 vals = {}
-        res = super(SaleOrder,self).write(vals)
-        return res
-
-
-
-    @api.multi
-    def writeeee(self,vals):
-        partner_id = self.partner_id
-        payment_term_id = self.payment_term_id
-        pricelist_id = self.pricelist_id
-        context = self._context
-        if context and context.get('website_id') and partner_id.name != 'Public user':
-		if 'partner_id' in vals.keys():
-                    #vals['partner_id'] = partner_id.id
-		    del vals['partner_id']
-		if 'payment_term_id' in vals.keys():
-		    #vals['payment_term_id'] = payment_term_id.id
-		    del vals['payment_term_id']
-		if 'pricelist_id' in vals.keys():
-		    #vals['pricelist_id'] = pricelist_id.id
-		    del vals['pricelist_id']
-		if 'partner_invoice_id' in vals.keys():
-		    del vals['partner_invoice_id']
-		if 'partner_shipping_id' in vals.keys():
-		    del vals['partner_shipping_id']
         return super(SaleOrder,self).write(vals)
+
 
     @api.multi
     def action_confirm(self):
@@ -120,32 +119,49 @@ class SaleOrder(models.Model):
             #order.order_line._action_procurement_create()
         if self.env['ir.values'].get_default('sale.config.settings', 'auto_done_setting'):
             self.action_done()
-
         #Jagadeesh sep 05 start
-        if request.session.get('go_for_additional_beverages') or request.session.get('for_additional_budget'):
-            self.project_create = False
+#         if request.session.get('go_for_additional_beverages') or request.session.get('for_additional_budget'):
+#             self.project_create = False
         #Jagadeesh sep 05 end
 
 
         #Jagadeesh JUL07 start
         #if any(product in [line.product_id.name for line in self.order_line] for product in ['Full Bar','Cocktail Bar']):
-	if self.project_create:
+        self.project_create = True #Added by Dhruvil (testing)
+        if self.project_create and self.team_id.name != 'Website Sales':
             if self.service_required_ids:
                 project_name = str(self.partner_id.name)+' : ' +str(self.service_required_ids[0].name)+'-'+str(self.time_start)
             else:
                 project_name = str(self.partner_id.name)+' : '+str(self.service_required_ids.name)+'-'+str(self.time_start)
-	    project_number = self.env['ir.sequence'].next_by_code('project.project')
+            project_number = self.env['ir.sequence'].next_by_code('project.project')
             #project = self.env['project.project'].create({'name':project_name,'sale_order_id':self.id,'near_thirst_dep':self.near_thirst_dep,'function_type':self.function_type,'no_of_people':self.no_of_people,'service_required_ids':[[6, False, [tag.id for tag in self.service_required_ids if tag]]],'bars':self.bars,'time_start':self.time_start,'time_end':self.time_end,'function_venue':self.function_venue,'budget_amt':self.budget_amt,'partner_id':self.partner_id.id,'project_number':self.env['ir.sequence'].next_by_code('project.project')})
-	    project = self.env['project.project'].create({'name':project_number,'sale_order_id':self.id,'near_thirst_dep':self.near_thirst_dep,'function_type':self.function_type,'no_of_people':self.no_of_people,'service_required_ids':[[6, False, [tag.id for tag in self.service_required_ids if tag]]],'bars':self.bars,'time_start':self.time_start,'time_end':self.time_end,'function_venue':self.function_venue,'budget_amt':self.budget_amt,'partner_id':self.partner_id.id,'project_number':project_number,'division_ids':[[6,0,[div.id for div in self.division_ids]]] })
-
+            project = self.env['project.project'].create({
+                    'name': project_number,
+                    'sale_order_id': self.id,
+                    'near_thirst_dep': self.near_thirst_dep,
+                    'function_type': self.function_type,
+                    'no_of_people': self.no_of_people,
+                    'service_required_ids': [[6, False, [tag.id for tag in self.service_required_ids if tag]]],
+                    'bars': self.bars,
+                    'time_start': self.time_start,
+                    'time_end': self.time_end,
+                    'function_venue': self.function_venue,
+                    'budget_amt': self.budget_amt,
+                    'partner_id': self.partner_id.id,
+                    'project_number': project_number,
+                    'division_ids': [[6,0,[div.id for div in self.division_ids]]],
+                    'setup_date': datetime.strptime(self.time_start, DEFAULT_SERVER_DATETIME_FORMAT) + timedelta(hours=-2) if self.time_start else False,
+                    'breakdown_date': datetime.strptime(self.time_end, DEFAULT_SERVER_DATETIME_FORMAT) + timedelta(hours=2) if self.time_end else False,
+                    'bar_tender_arrival_time': datetime.strptime(self.time_start, DEFAULT_SERVER_DATETIME_FORMAT) + timedelta(hours=-2) if self.time_start else False,
+                    'bar_support_manager_arrival_time': datetime.strptime(self.time_start, DEFAULT_SERVER_DATETIME_FORMAT) + timedelta(hours=-2) if self.time_start else False
+                })
             if project:
-		account_analytic_obj = self.env['account.analytic.account'].search([('name','=',project.name)],limit=1)
+                account_analytic_obj = self.env['account.analytic.account'].search([('name','=',project.name)],limit=1)
                 account_analytic_obj.division_ids = [[6,0,[div.id for div in project.division_ids]]]
                 if project.budget_amt:
                     bev_budget_obj = self.env['beverage.budget'].create({'budget_amount':project.budget_amt,'req_partner_id':self.partner_id.id,'date_req':str(datetime.now()),'project_id':project.id})
                 bev_product_ids = [obj.product_id.id for obj in self.env['beverages'].search([]) ]
                 self.project_project_id = project.id
-
                 for data in self.order_line:
                     if data.product_id.product_tmpl_id.id in bev_product_ids:
                         beverage_menu_id = self.env['beverages'].search([('product_id','=',data.product_id.product_tmpl_id.id)]).id
@@ -170,39 +186,38 @@ class SaleOrder(models.Model):
                     mrp_bom_obj = self.env['mrp.bom'].search([('product_tmpl_id','=',data.product_id.product_tmpl_id.id)])
                     project.product_bom_ids = [(0,0,{'product_code':line.product_id.default_code,'product_id':line.product_id.id,'classification':line.product_id.classification,'product_qty':line.product_qty,'on_hand':line.product_id.qty_available,'forecasted':line.product_id.virtual_available,'product_uom_id':line.product_uom_id.id}) for line in mrp_bom_obj.bom_line_ids]
 
-	self.send_confirmation_email()
+        self.send_confirmation_email()
         return True
-
-    '''@api.model
-    def get_today_date(self):
-        return date.today()'''
 
     @api.multi
     def _prepare_invoice(self):
         res = super(SaleOrder,self)._prepare_invoice()
         if self.project_project_id:
-            res.update({'inv_project_id':self.project_project_id.id})
-	res.update({'division_ids':[[6,0,[div.id for div in self.division_ids]]] })
+            res.update({'inv_project_id': self.project_project_id.id})
+        res.update({'division_ids':[[6, 0, self.division_ids.ids]]})
         return res
 
     @api.multi
     def goto_beverages_selection(self):
-	    if 'Cocktail Bar' in [line.product_id.name for line in self.order_line]:
-		bar = 'cocktail_bar'
-	    elif 'Full Bar' in [line.product_id.name for line in self.order_line]:
-		bar = 'full_bar'
-	    else:
-		bar = False
-	
-	    if bar and self.project_project_id:
-                return {
-            	'type': 'ir.actions.act_url',
-           	'url':   '/beverage_selection/%s/%s/standard'%(bar,self.project_project_id.id),
-            	'target': 'new',
-            	}
-            else:
-                raise ValidationError("Can't go for beverage selection")
+        beverages = self.env['beverages'].search([])
+        product_template_ids = beverages.mapped('product_id').ids
+        products = self.env['product.product'].search([('product_tmpl_id', 'in', product_template_ids)])
 
+        if 'Cocktail Bar' in [line.product_id.name for line in self.order_line]:
+            bar = 'cocktail_bar'
+        elif any(line.product_id.id in products.ids for line in self.order_line):
+            bar = 'full_bar'
+        else:
+            bar = False
+        if bar and self.project_project_id:
+            res = {
+                'type': 'ir.actions.act_url',
+                'url':   '/beverage_selection/%s/%s/standard'%(bar,self.project_project_id.id),
+                'target': 'new',
+            }
+            return res
+        else:
+            raise ValidationError("Can't go for beverage selection")
 
     @api.multi
     def send_confirmation_email(self):
@@ -311,10 +326,6 @@ class SaleOrder(models.Model):
         }
 
 
-
-
-
-
 class QuotaionCancel(models.Model):
     _name = 'quotation.cancel'
 
@@ -322,14 +333,10 @@ class QuotaionCancel(models.Model):
     lost_reason = fields.Text('Additional comments for cancel reason ')
     required_reason = fields.Boolean('Required Reason ?')
 
-
     @api.onchange('lost_reason_id')
     def onchange_lost_reason(self):
-        if self.lost_reason_id:
-            if self.lost_reason_id.name in ['other','Other']:
-                self.required_reason = True
-            else:
-                self.required_reason = False
+        if self.lost_reason_id.name in ['other', 'Other']:
+            self.required_reason = True
         else:
             self.required_reason = False
 
@@ -337,12 +344,13 @@ class QuotaionCancel(models.Model):
     def submit_reason(self):
         if self.lost_reason_id:
             sale_order_id = self.env.context.get('active_id')
-            sale_order_obj = self.env['sale.order'].browse(sale_order_id)
-            sale_order_obj.lost_reason_id = self.lost_reason_id.id
-            sale_order_obj.lost_reason = self.lost_reason
-            sale_order_obj.required_reason = self.required_reason
-
-            sale_order_obj.state = 'cancel'
+            sale_order = self.env['sale.order'].browse(sale_order_id)
+            sale_order.write({
+                'lost_reason_id': self.lost_reason_id.id,
+                'lost_reason': self.lost_reason,
+                'required_reason': self.required_reason,
+                'state': 'cancel'
+            })
         return True
 
 
@@ -360,18 +368,17 @@ class DivisionDivision(models.Model):
     name = fields.Char('Division')
 
 
-
 class SaleQuoteLine(models.Model):
     _inherit = 'sale.quote.line'
 
     hours = fields.Integer('Hours',default=1)
     days = fields.Integer('Days',default=1)
 
+
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
     project_id = fields.Many2one('project.project','Project')
-
     wharehouse_in = fields.Float('Wharehouse In')
     wharehouse_out = fields.Float('Wharehouse Out')
     event_open = fields.Float('Event Opening')
@@ -395,20 +402,6 @@ class SaleOrderLine(models.Model):
                 vals = {}
 
         return super(SaleOrderLine,self).write(vals)
-
-
-
-    @api.multi
-    def writeeeeeee(self,vals):
-        price_unit, product_uom_qty, product_uom = self.price_unit, self.product_uom_qty,self.product_uom
-
-        if self.env.context.get('website_id'):
-	    if self.order_id.partner_id.name != 'Public user':
-                vals = {'price_unit':price_unit,'product_uom_qty':product_uom_qty,'product_uom':product_uom.id }
-
-        return super(SaleOrderLine,self).write(vals)
-
-
 
     @api.depends('product_uom_qty','wharehouse_in')
     def _get_variance(self):
@@ -447,45 +440,10 @@ class SaleOrderLine(models.Model):
 
     @api.multi
     def _prepare_invoice_line(self, qty):
-        """
-        Prepare the dict of values to create the new invoice line for a sales order line.
-
-        :param qty: float quantity to invoice
-        """
-        self.ensure_one()
-        res = {}
-        account = self.product_id.property_account_income_id or self.product_id.categ_id.property_account_income_categ_id
-        if not account:
-            raise UserError(_('Please define income account for this product: "%s" (id:%d) - or for its category: "%s".') %
-                (self.product_id.name, self.product_id.id, self.product_id.categ_id.name))
-
-        fpos = self.order_id.fiscal_position_id or self.order_id.partner_id.property_account_position_id
-        if fpos:
-            account = fpos.map_account(account)
-
-        account_analytic_obj = self.env['account.analytic.account'].search([('name','=',self.order_id.project_project_id.name)],limit=1) #Jaga
-	res = {
-            'name': self.name,
-            'sequence': self.sequence,
-            'origin': self.order_id.name,
-            'account_id': account.id,
-            'price_unit': self.price_unit,
-	    #Jagadeesh added
-	    'days':self.days,
-	    'hours':self.hours,
-	    #Jagadeesh end
-            'quantity': qty,
-            'discount': self.discount,
-            'uom_id': self.product_uom.id,
-            'product_id': self.product_id.id or False,
-            'layout_category_id': self.layout_category_id and self.layout_category_id.id or False,
-            'product_id': self.product_id.id or False,
-            'invoice_line_tax_ids': [(6, 0, self.tax_id.ids)],
-            'account_analytic_id': account_analytic_obj and account_analytic_obj.id or False, #self.order_id.project_id.id,
-            'analytic_tag_ids': [(6, 0, self.analytic_tag_ids.ids)],
-        }
+        res = super(SaleOrderLine, self)._prepare_invoice_line(qty)
+        res['days'] = self.days
+        res['hours'] = self.hours
         return res
-
 
 
 class AccounTax(models.Model):
@@ -578,23 +536,10 @@ class PurchaseOrder(models.Model):
             if line.product_uom.id == line.product_id.uom_id.id:
                 purchase_price = line.price_unit
             else:
-                uom_diff = round(line.product_id.uom_id.factor / line.product_id.uom_po_id.factor)
-                purchase_price = line.price_unit / uom_diff
+                uom_diff = round(line.product_id.uom_id.factor / line.product_id.uom_po_id.factor or 1.0)
+                purchase_price = line.price_unit / (uom_diff or 1.0)
 
             if purchase_price > line.product_id.standard_price:
                 line.product_id.standard_price = purchase_price
 
         return res
-
-
-
-'''class SelectedBeverages(models.Model):
-        _name = 'selected.beverages'
-        sale_order_id = fields.Many2one('sale.order',string='Sale Order')
-        product_id = fields.Many2one('product.template',string='Products')
-        category_id = fields.Many2one('beverages.category',string='Category')
-        sub_category_id = fields.Many2one('beverages.sub.category',string='Sub Category')
-	product_name = fields.Char(string="Product")
-	on_hand = fields.Integer(string="On Hand")#qty_available
-	forecasted = fields.Integer(string="Forecasted")#virtual_available
-        bev_select_id = fields.Many2one('beverages.selection',string="Beverage Selection") '''

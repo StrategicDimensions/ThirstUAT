@@ -1156,7 +1156,7 @@ class SelectedBeverages(models.Model):
         @api.depends('qty_required','on_hand')
         def _get_variance(self):
             for obj in self:
-                obj.variance = obj.qty_required - obj.on_hand
+                obj.variance = obj.on_hand - obj.qty_required
 
 
 class ProductBomLines(models.Model):

@@ -222,14 +222,14 @@
 	    </xpath>
 
 	    <xpath expr="//table/tbody/t[2]/tr[1]/td[1]" position="after">
-	 	<td></td><td></td>
+	 	<td/><td/>
 	    </xpath>
 
 	    <xpath expr="//table/tbody/t[2]/tr[2]/td[1]" position="after">
-                <td></td><td></td>
+                <td/><td/>
             </xpath>
 	    <xpath expr="//table/tbody/t[2]/tr[3]/td[1]" position="after">
-                <td></td><td></td>
+                <td/><td/>
             </xpath>
 	</template>
 	<!-- Jagadeesh end APR 04 -->
@@ -277,8 +277,8 @@
 				    <div id="tc_accept">
 				 	
 			                  <input type="checkbox" name="tc_accept" value="accept"/> I have read and accepting the T &amp; C's and Privacy Policy of Thirst Bar Services.<p></p>
-					  <t>Click <a href='http://thirstuat.odoo.co.za/page/terms-conditions' target="_blank">here</a> to view Terms and Conditions.</t><br/>
-                                          <t>Click <a href='http://thirstuat.odoo.co.za/page/privacy-policy' target="_blank">here</a> to view Privacy Policy.</t><br/>
+					  <t>Click <a href='/page/terms-conditions' target="_blank">here</a> to view Terms and Conditions.</t><br/>
+                                          <t>Click <a href='/page/privacy-policy' target="_blank">here</a> to view Privacy Policy.</t><br/>
 
 					  <hr/>
 				    </div>
@@ -347,7 +347,6 @@
 		    </div>
 		</t>
 	</template>
-
 
         <!-- <template id="beverages_selection_layout" inherit_id="website.assets_frontend">
             <xpath expr="." position="inside">

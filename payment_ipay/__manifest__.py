@@ -1,24 +1,23 @@
 # -*- coding: utf-8 -*-
 {
-    'name' : 'PayU',
+    'name' : 'i-Pay',
     'version' : '1.0',
     'depends' : ['payment','website_sale'],
     'author' : 'Strategic Dimensions',
     'category': 'payment',
-    'summary':"PayU South Africa",
+    'summary':"i-pay",
     'description': """
-    PayU
+    i-pay
     """,
-    'website': 'http://www.odoo.com',
-    'images': ['images/main-screenshot.png'],
+    'website': 'http://www.odoo.com',    
     'data': [
-	'views/payu_template.xml',
-	'data/payu_data.xml',
-	'views/payu.xml',
+	'views/ipay_template.xml',
+	'data/ipay_data.xml',
+	
     ],
     'demo': [],
     'installable': True,
-    'application': True,
+    'application':True,
     'auto_install': False,
-
+    
 }

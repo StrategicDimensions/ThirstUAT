@@ -78,60 +78,61 @@ class PayuController(http.Controller):
             payu_response['REFERENCE'] = result['merchantReference']
             payu_response['RESULTMESSAGE'] = result['resultMessage']
         response_state = request.env['payment.transaction'].sudo().form_feedback(payu_response, 'payu')
+        # if response_state:
+        #     return werkzeug.utils.redirect('/shop/payment/validate')
+        # else:
+        #     return werkzeug.utils.redirect('/shop/unsuccessful')
+
+
+        sale_order_id = request.env['sale.order'].sudo().search([('name', '=', result['merchantReference'])])
+        sale_order_data = sale_order_id
+        request.session['sale_last_order_id'] = sale_order_id.id
+        tx_id = request.env['payment.transaction'].sudo().search([('reference', '=', result['merchantReference'])])
+        tx = tx_id
+        if not sale_order_id or (sale_order_id.amount_total and not tx):
+            return request.redirect('/shop')
+        if (not sale_order_id.amount_total and not tx) or tx.state in ['pending', 'done']:
+            if (not sale_order_id.amount_total and not tx):
+                sale_order_id.action_button_confirm()
+            email_act = sale_order_id.action_quotation_send()
+        elif tx and tx.state == 'cancel':
+            sale_order_id.action_cancel()
+        elif tx and (tx.state == 'draft' or tx.state == 'sent' or tx.state == 'done'):
+            if result and payu_response['successful'] and payu_response['TRANSACTION_STATUS'] in ['SUCCESSFUL', 'PARTIAL_PAYMENT', 'OVER_PAYMENT']:
+                transaction = tx.sudo().write({'state': 'done', 'date_validate': datetime.now(), 'acquirer_reference': result['payUReference']})
+                email_act = sale_order_id.action_quotation_send()
+                action_confirm_res = sale_order_id.action_confirm()
+                sale_order = sale_order_id.read([])
+            if sale_order_id.state == 'sale':
+                journal_ids = request.env['account.journal'].sudo().search([('name', '=', 'FNB 62085815143')], limit=1)
+                journal = journal_ids.read([])
+            currency = request.env['res.currency'].sudo().search([('name', '=', 'ZAR')], limit=1)
+            method = request.env['account.payment.method'].sudo().search([('name', '=', 'Manual')], limit=1)
+            account_payment = {
+                'partner_id': sale_order[0]['partner_id'][0],
+                'partner_type': 'customer',
+                'journal_id': journal_ids.id,
+                #'invoice_ids':[(4,inv_obj.id,0)],
+                'amount': sale_order[0]['amount_total'],
+                'communication': sale_order_id.name,
+                'currency_id': currency.id,
+                'payment_type': 'inbound',
+                'payment_method_id': method.id,
+                'payment_transaction_id': tx.id,
+            }
+            acc_payment = request.env['account.payment'].sudo().create(account_payment)
+            acc_payment.sudo().post()
+            sale_order_id = request.session.get('sale_last_order_id')
+            sale_order_data = request.env['sale.order'].sudo().browse(sale_order_id)
+            # if sale_order_data.project_project_id:
+            #     request.session['last_project_id'] = sale_order_data.project_project_id.id
+
         if response_state:
-            return werkzeug.utils.redirect('/shop/payment/validate')
+            sale_order_data.message_post(subject="T&C's Privacy Policy", body="%s accepted T&C's and Privacy Policy." % sale_order_data.partner_id.name)
+            return werkzeug.utils.redirect('/shop/confirmation')
         else:
             return werkzeug.utils.redirect('/shop/unsuccessful')
-
-
-        # sale_order_id = request.env['sale.order'].sudo().search([('name', '=', result['merchantReference'])])
-        # sale_order_data = sale_order_id
-        # request.session['sale_last_order_id'] = sale_order_id.id
-        # tx_id = request.env['payment.transaction'].sudo().search([('reference', '=', result['merchantReference'])])
-        # tx = tx_id
-        # if not sale_order_id or (sale_order_id.amount_total and not tx):
-        #     return request.redirect('/shop')
-        # if (not sale_order_id.amount_total and not tx) or tx.state in ['pending', 'done']:
-        #     if (not sale_order_id.amount_total and not tx):
-        #         sale_order_id.action_button_confirm()
-        #     email_act = sale_order_id.action_quotation_send()
-        # elif tx and tx.state == 'cancel':
-        #     sale_order_id.action_cancel()
-        # elif tx and (tx.state == 'draft' or tx.state == 'sent' or tx.state == 'done'):
-        #     if result and payu_response['successful'] and payu_response['TRANSACTION_STATUS'] in ['SUCCESSFUL', 'PARTIAL_PAYMENT', 'OVER_PAYMENT']:
-        #         transaction = tx.sudo().write({'state': 'done', 'date_validate': datetime.now(), 'acquirer_reference': result['payUReference']})
-        #         email_act = sale_order_id.action_quotation_send()
-        #         action_confirm_res = sale_order_id.action_confirm()
-        #         sale_order = sale_order_id.read([])
-        #     if sale_order_id.state == 'sale':
-        #         journal_ids = request.env['account.journal'].sudo().search([('name', '=', 'FNB 62085815143')], limit=1)
-        #         journal = journal_ids.read([])
-        #     currency = request.env['res.currency'].sudo().search([('name', '=', 'ZAR')], limit=1)
-        #     method = request.env['account.payment.method'].sudo().search([('name', '=', 'Manual')], limit=1)
-        #     account_payment = {
-        #         'partner_id': sale_order[0]['partner_id'][0],
-        #         'partner_type': 'customer',
-        #         'journal_id': journal_ids.id,
-        #         #'invoice_ids':[(4,inv_obj.id,0)],
-        #         'amount': sale_order[0]['amount_total'],
-        #         'communication': sale_order_id.name,
-        #         'currency_id': currency.id,
-        #         'payment_type': 'inbound',
-        #         'payment_method_id': method.id,
-        #         'payment_transaction_id': tx.id,
-        #     }
-        #     acc_payment = request.env['account.payment'].sudo().create(account_payment)
-        #     acc_payment.post()
-        #     sale_order_id = request.session.get('sale_last_order_id')
-        #     sale_order_data = request.env['sale.order'].sudo().browse(sale_order_id)
-        #     if sale_order_data.project_project_id:
-        #         request.session['last_project_id'] = sale_order_data.project_project_id.id
-        # 
-        #         sale_order_data.message_post(subject="T&C's Privacy Policy", body="%s accepted T&C's and Privacy Policy." % sale_order_data.partner_id.name)
-        #         return werkzeug.utils.redirect('/shop/confirmation')
-        #     else:
-        #         return werkzeug.utils.redirect('/shop/unsuccessful')
-        # return werkzeug.utils.redirect('/shop/unsuccessful')
+        return werkzeug.utils.redirect('/shop/unsuccessful')
 
     @http.route(['/shop/unsuccessful'], type='http', auth="public", website=True)
     def unsuccessful(self, **post):
@@ -209,7 +210,7 @@ class PayuController(http.Controller):
             plugin = MyPlugin()
             client = Client(urlToQuery, plugins=[plugin])
         except Exception, e:
-            return "http://thirstuat.odoo.co.za/shop/unsuccessful"
+            return "/shop/unsuccessful"
         #------------------------------------- CREATING CUSTOM HEADER--------------------------------------
         wsse = ('wsse', 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd')
 

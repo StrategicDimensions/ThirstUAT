@@ -8,6 +8,7 @@
 	    <field name="arch" type="xml">
 		<xpath expr="//button[@name='action_done']" position="after">
                     <button name="goto_beverages_selection" type="object" class="oe_highlight" string="Go to Beverages Selecton" attrs="{'invisible':[('state','!=','sale')]}"/>
+                <button name="open_myform" string="Send SMS" type="object" class="oe_highlight"/>
                 </xpath>
 		<field name="payment_term_id" position="after">
 		    <field name="no_of_people" string="No of Guests"/>
@@ -63,6 +64,22 @@
                 </xpath>
 	    </field>
 	</record>
+
+    <record model="ir.ui.view" id="sale_margin_sale_order_inherited">
+        <field name="name">sale.order.margin.view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_margin.sale_margin_sale_order"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='sale_margin_grp']" position="replace">
+                <group name="sale_margin_grp">
+                    <label for="margin" class="control-label">Margin</label>
+	                <div name="sale_margin_grp_inherited">
+	                    <field name="margin" groups="base.group_user"/><field style="margin-left: 15px;" name="margin_percent"/>%
+	                </div>
+                </group>
+            </xpath>
+        </field>
+    </record>
 
 	<!-- service required form -->
 	<record id="service_required_form" model="ir.ui.view">

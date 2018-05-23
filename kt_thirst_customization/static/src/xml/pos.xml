@@ -75,12 +75,17 @@
     </t>
     <t t-extend="PaymentScreenWidget">
 	<t t-jquery="div.paymentmethods-container" t-operation="after">
-	    <div id="converted_cash_bar">
-		<center><h2><font color="red">Budget Depleted, Converted to Cash Bar</font></h2></center>
-	    </div>
-	    <div> 
-	        <center><p>Budget Available : </p><readonly><input style="text-align:center" type="text" name="amount" disabled="disabled"/></readonly></center>
-	    </div>
+        <t t-if="widget.pos.budget_available_amount &lt; 0">
+	        <div id="converted_cash_bar">
+		        <center><h2><font color="red">Budget Depleted, Converted to Cash Bar</font></h2></center>
+	        </div>
+        </t>
+        
+        <t t-if="widget.pos.budget_available_amount &gt; 0">
+    	    <div> 
+    	        <center><p>Budget Available : </p><readonly><input style="text-align:center" t-att-value="widget.pos.budget_available_amount" type="text" name="amount" disabled="disabled"/></readonly></center>
+    	    </div>
+        </t>
 	</t>
 	<t t-jquery="div.js_set_customer" t-operation="replace">
             <div class='button js_set_project'><!-- jagadesh -->
@@ -147,13 +152,13 @@
         <div class="product-img">
             <img t-att-src='image_url' />
             <span class="price-tag">
-                <t t-esc="widget.format_currency(product.price,'Product Price')"/>
+                <t t-esc="widget.format_currency(product.price_include_tax,'Product Price')"/>
                 <t t-if="product.to_weight" t-esc="'/'+widget.pos.units_by_id[product.uom_id[0]].name"/>
             </span>
             <t t-if="widget.pos.config.show_qty_on_pos">
-                <span t-att-class="'product-qty ' + ((widget.pos.products_on_hand[product.id]>0)? '' : 'product-qty-low') " >
+                <span t-att-class="'product-qty ' + ((product.qty_available > 0)? '' : 'product-qty-low') " >
                     <span class="qty" >
-                        <t t-esc="widget.pos.products_on_hand[product.id]"/>
+                        <t t-esc="product.qty_available"/>
                     </span>
                     <t t-if="product.to_weight" t-esc="' Kgs'"/>
                 </span>
@@ -162,8 +167,15 @@
     </t>
 </t>
 <!-- Jagadeesh sep 05 end -->
+<t t-extend="NumpadWidget" name="NumpadWidgetExtend">
+    <t t-jquery="button[data-mode='discount']" t-operation="replace">
+        <button class="mode-button" style="visibility:hidden" data-mode='discount'>Disc</button>
+    </t>
 
-
+    <t t-jquery="button[data-mode='price']" t-operation="replace">
+        <button class="mode-button" style="visibility:hidden" data-mode='discount'>Disc</button>
+    </t>
+</t>
 
 
 </templates>	

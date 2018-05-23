@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="0">
+
+        <record id="payment_acquirer_ipay" model="payment.acquirer">
+            <field name="name">i-Pay</field>
+            <field name="provider">ipay</field>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="view_template_id" ref="ipay_acquirer_button"/>
+	    <!--<field name="view_template_id" ref="payment.default_acquirer_button"/>-->
+            <field name="environment">test</field>
+            <field name="pre_msg"><![CDATA[
+<p>You will be redirected to the i-pay payment website after cliking on the payment button.</p>]]></field>
+	    <field name="image" type="base64" file="payment_ipay/static/src/img/ipay_logo.jpg"/>
+            <field name="module_id" ref="base.module_payment_ipay"/>
+	    <field name="description" type="html">
+            <p>
+
+            </p>
+            <ul class="list-inline">
+                <li><i class="fa fa-check"/>eCommerce</li>
+                <li><i class="fa fa-check"/>Subscription</li>
+                <li><i class="fa fa-check"/>Pay button in emails</li>
+            </ul>
+        </field>
+        </record>
+
+    </data>
+</openerp>
+

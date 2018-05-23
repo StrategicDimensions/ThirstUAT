@@ -9,7 +9,12 @@ class ProductTemplate(models.Model):
 	classification = fields.Selection([('bar','Bar'),('equipment','Equipment'),('consumable','Consumable')])
 	sap_code = fields.Char(string="SAP Code")
 	sap_stock_code = fields.Char(string="SAP Stock Code")
-
+	price_include_tax = fields.Float(compute="compute_price_include_tax")
+	
+	def compute_price_include_tax(self):
+		for product in self:
+			taxes = product.taxes_id.compute_all(product.price, product.currency_id, 1, product)
+			product.price_include_tax = taxes['total_included']
 
 
 	@api.multi

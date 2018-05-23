@@ -9,29 +9,31 @@ class PosOrder(models.Model):
 
     @api.model
     def _order_fields(self, ui_order):
+        cust_session_id = self.env['pos.session'].browse(ui_order['pos_session_id'])
         process_line = partial(self.env['pos.order.line']._order_line_fields)
-	project_obj = self.env['project.project'].browse(ui_order['project_id'])
-	partner_id = project_obj.sale_order_id.partner_id.id
-	'''if project_obj.event_pos_type != 'budget_cash_bar' :
-	    ordered_type = project_obj.event_pos_type
-	else:
-	    ordered_type = ui_order['ordered_type']'''
+        project_obj =  cust_session_id.project_id
+# 	project_obj = self.env['project.project'].browse(ui_order['project_id'])
+        partner_id = project_obj.sale_order_id.partner_id.id
+        '''if project_obj.event_pos_type != 'budget_cash_bar' :
+            ordered_type = project_obj.event_pos_type
+        else:
+        ordered_type = ui_order['ordered_type']'''
         return {
             'name':         ui_order['name'],
             'user_id':      ui_order['user_id'] or False,
             'session_id':   ui_order['pos_session_id'],
             'lines':        [process_line(l) for l in ui_order['lines']] if ui_order['lines'] else False,
             'pos_reference': ui_order['name'],
-	    #jagadeesh start
-            #'partner_id':   ui_order['partner_id'] or False,
-            'project_id': ui_order['project_id'] or False,   
-	    'partner_id': partner_id,
-	    'ordered_type': ui_order['ordered_type'],
-	    #jagadeesh end
+               #jagadeesh start
+#            'partner_id':   ui_order['partner_id'] or False,
+#            'project_id': ui_order['project_id'] or False,
+            'project_id': project_obj.id or False,   
+            'partner_id': partner_id,
+            'ordered_type': ui_order['ordered_type'],
+            #jagadeesh end
             'date_order':   ui_order['creation_date'],
             'fiscal_position_id': ui_order['fiscal_position_id']
         }
-
 
     @api.multi
     def action_invoice_create(self,ids):
@@ -88,4 +90,4 @@ class PosOrder(models.Model):
 class PosSession(models.Model):
     _inherit = 'pos.session'
 
-    project_id = fields.Many2one('project.project','project');    
+    project_id = fields.Many2one('project.project', 'project');

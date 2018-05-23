@@ -288,6 +288,7 @@
                                 <field name="bar_tender_arrival_time"/>
                                 <field name="bar_support_manager_arrival_time"/>
 				<field name="staff_readonly" invisible="1"/>
+                <field name="is_manager" invisible="1"/>
                             </group>
                         </group>
 			<!--<button name="print_staff_sheet" type="object" string="Print Staff Sheet" class="oe_highlight"/>-->
@@ -300,7 +301,7 @@
                                     <button style="float:left" name="print_staff_costing" type="object" string="Print Staff Costing Report" class="oe_highlight"/>
                                 </div>
                                 <div class="col-xs-2">
-                                    <button style="float:left" name="post_staff_costing" type="object" string="Post Staff Costing" class="oe_highlight" attrs="{'invisible':[('staff_readonly','=',True)]}"/>
+                                    <button style="float:left" name="post_staff_costing" type="object" string="Post Staff Costing" class="oe_highlight" attrs="{'invisible':['|', ('staff_readonly','=',True), ('is_manager', '=', False)]}"/>
                                 </div>
                             </div>
                         </div>
@@ -325,34 +326,20 @@
                         </notebook>
                     </page>
 		    <page string="Bar Materials">
-                        <field name="product_bom_ids">
-                            <tree create="true" delete="true">
-                                <field name="product_id" />
-                                <field name="product_code" />
-                                <field name="classification" />
-                                <field name="product_qty"/>
-                                <field name="product_uom_id"/>
-                                <field name="uom_po_id"/>
-                                <field name="on_hand" />
-                                <field name="forecasted" />
-                                <field name="variance" />
-                            </tree>
-                            <form>
-                                <group>
-                                    <group>
-                                        <field name="product_id" options="{'no_open':True,'no_create_edit':True}"/>
-                                        <field name="product_qty"/>
-                                        <field name="product_code" invisible="1"/>
-                                        <field name="classification" invisible="1"/>
-                                        <field name="product_uom_id" invisible="1"/>
-                                        <field name="uom_po_id" invisible="1"/>
-                                        <field name="on_hand" invisible="1" />
-                                        <field name="forecasted" invisible="1"/>
-                                    </group>
-                                    <group></group>
-                                </group>
-                            </form>
-                        </field>
+                <field name="product_bom_ids">
+                    <tree create="true" delete="true" editable="bottom">
+                        <field name="product_id" />
+                        <field name="product_code" />
+                        <field name="classification" />
+                        <field name="product_qty" sum="Total Qty"/>
+                        <field name="product_uom_id"/>
+                        <field name="uom_po_id"/>
+                        <field name="on_hand" />
+                        <field name="forecasted" />
+                        <field name="variance" />
+                        <field name="total" sum="Total"/>
+                    </tree>
+                </field>
 		    </page>
 		    <page string="Sales">
 			<notebook>
@@ -379,6 +366,8 @@
                         </notebook>
                     </page>
 		    <page string="POS devices">
+                    <group>
+                        <field name="pricelist_id"/>
                         <field name="pos_device_ids">
                            <tree>
                                 <field name="pos_config_id"/>
@@ -389,11 +378,12 @@
                                         <field name="pos_config_id" options="{'no_create_edit':True,'no_open':True}"/>
                                     </group>
                                 </group>
-                                <footer>
+
                                     <button name="start_new_session" string="New Session" type="object" class="oe_highlight"/>
-                                </footer>
+
                            </form>
                         </field>
+                    </group>
                     </page>
 		</xpath>			
 	    </field>

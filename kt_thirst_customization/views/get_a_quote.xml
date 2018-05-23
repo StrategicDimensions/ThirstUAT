@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="get-a-quote" name="get a quote">
+        <t t-call="website.layout">
+            <div id="wrap" class="oe_structure oe_empty">
+                <form action="/website_form/" method="post" class="s_website_form form-horizontal container-fluid mt32" enctype="multipart/form-data" data-model_name="crm.lead" data-success_page="/page/success">
+                    <!--<div class="form-group form-field o_website_form_required"> <div class="col-md-3 col-sm-4 text-right"> <label class="control-label" for="name"> Subject </label> </div> <div class="col-md-7 col-sm-8"> <input class="form-control
+                    o_website_form_input" name="name" required="1" type="text"/> </div> </div>-->
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="contact_name">
+                                Full Name
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <input class="form-control o_website_form_input" name="contact_name" type="text"/>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="mobile">
+                                Mobile
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <input class="form-control o_website_form_input" name="mobile" type="text"/>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="email_from">
+                                Email
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <input class="form-control o_website_form_input" name="email_from" type="text"/>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="near_thirst_dep">
+                                Nearest Thirst Department*
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <div class="o_website_form_flex">
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="near_thirst_dep" value="captown" type="radio"/>
+                                        <span>
+                                            Cape Town
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="near_thirst_dep" value="durban" type="radio"/>
+                                        <span>
+                                            Durban
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="near_thirst_dep" value="johannesburg" type="radio"/>
+                                        <span>
+                                            Johannesburg
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="function_type">
+                                Function Type
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <div class="o_website_form_flex">
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="function_type" value="corporate" type="radio"/>
+                                        <span>
+                                            Corporate
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="function_type" value="private" type="radio"/>
+                                        <span>
+                                            Private
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="function_type" value="wedding" type="radio"/>
+                                        <span>
+                                            Wedding
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="function_type" value="birthday" type="radio"/>
+                                        <span>
+                                            Birthday
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="function_type" value="product_launch" type="radio"/>
+                                        <span>
+                                            Product Launch
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="function_type" value="activation" type="radio"/>
+                                        <span>
+                                            Activation
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="required_services_ids">
+                                Services Required
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <div class="o_website_form_flex">
+                                <div class="checkbox o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="required_services_ids" value="1" type="checkbox"/>
+                                        <span>
+                                            Welcome Drinks
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="checkbox o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="required_services_ids" value="2" type="checkbox"/>
+                                        <span>
+                                            Full Bar
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="checkbox o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="required_services_ids" value="3" type="checkbox"/>
+                                        <span>
+                                            Signature Cocktail Bar
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="checkbox o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="required_services_ids" value="4" type="checkbox"/>
+                                        <span>
+                                            Signature Coffee Bar
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="checkbox o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="required_services_ids" value="5" type="checkbox"/>
+                                        <span>
+                                            Action Shooter Bar
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="checkbox o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="required_services_ids" value="6" type="checkbox"/>
+                                        <span>
+                                            Ice Lollies
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="checkbox o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="required_services_ids" value="7" type="checkbox"/>
+                                        <span>
+                                            Team Building
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="checkbox o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="required_services_ids" value="8" type="checkbox"/>
+                                        <span>
+                                            Kosher
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="bar_style">
+                                Bar Style
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <div class="o_website_form_flex">
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="bar_style" value="exp_bar" type="radio"/>
+                                        <span>
+                                            Experience Bar
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="bar_style" value="pl" type="radio"/>
+                                        <span>
+                                            PL
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="bar_style" value="special_events_bar" type="radio"/>
+                                        <span>
+                                            Special Events Bar
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="bar_style" value="festival_bars" type="radio"/>
+                                        <span>
+                                            Festival Bars
+                                        </span>
+                                    </label>
+                                </div>
+                                <div class="radio o_website_form_flex_item">
+                                    <label>
+                                        <input class="o_website_form_input" name="bar_style" value="circular" type="radio"/>
+                                        <span>
+                                            Circular
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="function_venue">
+                                Function Venue
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <input class="form-control o_website_form_input" name="function_venue" type="text"/>
+                        </div>
+                    </div>
+                    <!--<div class="form-group form-field"> <div class="col-md-3 col-sm-4 text-right"> <label class="control-label" for="function_start_time"> Function Start Date &amp;amp; Time </label> </div> <div class="col-md-7 col-sm-8"> <input class="form-control
+                    o_website_form_input o_website_form_datetime" name="function_start_time" type="text"/> </div> </div> <div class="form-group form-field"> <div class="col-md-3 col-sm-4 text-right"> <label class="control-label" for="function_end_time"> Function End
+                    Date &amp;amp; Time </label> </div> <div class="col-md-7 col-sm-8"> <input class="form-control o_website_form_input o_website_form_datetime" name="function_end_time" type="text"/> </div> </div>-->
+                    <div class="form-group form-field o_website_form_required_custom">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="fun_start_date">
+                                Function Start Date
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <input type="text" class="form-control o_website_form_input o_website_form_date" name="fun_start_date" required=""/>
+                        </div>
+                    </div>
+                    <div class="row form-group form-field o_website_form_custom o_website_form_required_custom">
+                        <div class="col-md-3 col-sm-3 text-right">
+                            <label class="control-label" for="Function Start Time (HH)">
+                                Function Start Time (HH)
+                            </label>
+                        </div>
+                        <div class="col-md-1 col-sm-1">
+                            <select class="form-control o_website_form_input" name="Function Start Time (HH)" required="false">
+                                <option value="00">
+                                    00
+                                </option>
+                                <option value="01">
+                                    01
+                                </option>
+                                <option value="02">
+                                    02
+                                </option>
+                                <option value="03">
+                                    03
+                                </option>
+                                <option value="04">
+                                    04
+                                </option>
+                                <option value="05">
+                                    05
+                                </option>
+                                <option value="06">
+                                    06
+                                </option>
+                                <option value="07">
+                                    07
+                                </option>
+                                <option value="08">
+                                    08
+                                </option>
+                                <option value="09">
+                                    09
+                                </option>
+                                <option value="10">
+                                    10
+                                </option>
+                                <option value="11">
+                                    11
+                                </option>
+                                <option value="12">
+                                    12
+                                </option>
+                                <option value="13">
+                                    13
+                                </option>
+                                <option value="14">
+                                    14
+                                </option>
+                                <option value="15">
+                                    15
+                                </option>
+                                <option value="16">
+                                    16
+                                </option>
+                                <option value="17">
+                                    17
+                                </option>
+                                <option value="18">
+                                    18
+                                </option>
+                                <option value="19">
+                                    19
+                                </option>
+                                <option value="20">
+                                    20
+                                </option>
+                                <option value="21">
+                                    21
+                                </option>
+                                <option value="22">
+                                    22
+                                </option>
+                                <option value="23">
+                                    23
+                                </option>
+                            </select>
+                        </div>
+                        <!--</div> <div class="form-group form-field o_website_form_custom o_website_form_required_custom">-->
+                        <div class="col-md-1 col-sm-1 text-right">
+                            <label class="control-label" for="Function Start Time (MM)">
+                                (MM)
+                            </label>
+                        </div>
+                        <div class="col-md-1 col-sm-1">
+                            <select class="form-control o_website_form_input" name="Function Start Time (MM)" required="false">
+
+                                <option value="00">
+                                    00
+                                </option>
+                                <option value="15">
+                                    15
+                                </option>
+                                <option value="30">
+                                    30
+                                </option>
+                                <option value="45">
+                                    45
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group form-field o_website_form_required_custom">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="fun_end_date">
+                                Function End Date
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <input type="text" class="form-control o_website_form_input o_website_form_date" name="fun_end_date" required=""/>
+                        </div>
+                    </div>
+                    <div class="row form-group form-field o_website_form_custom o_website_form_required_custom">
+                        <div class="col-md-3 col-sm-3 text-right">
+                            <label class="control-label" for="Function End Time (HH)">
+                                Function End Time (HH)
+                            </label>
+                        </div>
+                        <div class="col-md-1 col-sm-1">
+                            <select class="form-control o_website_form_input" name="Function End Time (HH)" required="false">
+                                <option value="00">
+                                    00
+                                </option>
+                                <option value="01">
+                                    01
+                                </option>
+                                <option value="02">
+                                    02
+                                </option>
+                                <option value="03">
+                                    03
+                                </option>
+                                <option value="04">
+                                    04
+                                </option>
+                                <option value="05">
+                                    05
+                                </option>
+                                <option value="06">
+                                    06
+                                </option>
+                                <option value="07">
+                                    07
+                                </option>
+                                <option value="08">
+                                    08
+                                </option>
+                                <option value="09">
+                                    09
+                                </option>
+                                <option value="10">
+                                    10
+                                </option>
+                                <option value="11">
+                                    11
+                                </option>
+                                <option value="12">
+                                    12
+                                </option>
+                                <option value="13">
+                                    13
+                                </option>
+                                <option value="14">
+                                    14
+                                </option>
+                                <option value="15">
+                                    15
+                                </option>
+                                <option value="16">
+                                    16
+                                </option>
+                                <option value="17">
+                                    17
+                                </option>
+                                <option value="18">
+                                    18
+                                </option>
+                                <option value="19">
+                                    19
+                                </option>
+                                <option value="20">
+                                    20
+                                </option>
+                                <option value="21">
+                                    21
+                                </option>
+                                <option value="22">
+                                    22
+                                </option>
+                                <option value="23">
+                                    23
+                                </option>
+                            </select>
+                        </div>
+                        <!--</div> <div class="form-group form-field o_website_form_custom o_website_form_required_custom">-->
+                        <div class="col-md-1 col-sm-1 text-right">
+                            <label class="control-label" for="Function End Time (MM)">
+                                (MM)
+                            </label>
+                        </div>
+                        <div class="col-md-1 col-sm-1">
+                            <select class="form-control o_website_form_input" name="Function End Time (MM)" required="false">
+                                <option value="00">
+                                    00
+                                </option>
+                                <option value="15">
+                                    15
+                                </option>
+                                <option value="30">
+                                    30
+                                </option>
+                                <option value="45">
+                                    45
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="no_of_guests">
+                                Number of Guests
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <input class="form-control o_website_form_input" step="1" name="no_of_guests" type="number"/>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="budget_amt">
+                                Budget
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <input class="form-control o_website_form_input" step="any" name="budget_amt" type="number"/>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="source_id">
+                                How did you hear about us
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <select class="form-control o_website_form_input" name="source_id" required="false">
+                                <option value="1">
+                                    Search engine
+                                </option>
+                                <option value="2">
+                                    Mailing Partner
+                                </option>
+                                <option value="3">
+                                    Newsletter
+                                </option>
+                                <option value="4">
+                                    Facebook
+                                </option>
+                                <option value="5">
+                                    Twitter
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group form-field">
+                        <div class="col-md-3 col-sm-4 text-right">
+                            <label class="control-label" for="description">
+                                Notes
+                            </label>
+                        </div>
+                        <div class="col-md-7 col-sm-8">
+                            <textarea class="form-control o_website_form_input" name="description"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-offset-3 col-sm-offset-4 col-sm-8 col-md-7">
+                            <span class="btn btn-primary btn-lg o_website_form_send o_default_snippet_text" data-original-title="" title="">Send</span>
+                            <span id="o_website_form_result" class="text-danger ml8"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </t>
+    </template>
+</odoo>

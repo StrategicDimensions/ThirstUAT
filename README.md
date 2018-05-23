@@ -1,1 +1,1 @@
-# ThirstUAT
+# Thirst

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+	<template id="pricing_inherited" inherit_id="website_quote.pricing">
+		<xpath expr="//t[@groups='sale.group_sale_layout'][1]/tr/td"
+			position="replace">
+			<td colspan="8" style="font-weight: bold; border-bottom: 1px solid black;">
+				&amp;bull;
+				<t t-esc="layout_category['name']" />
+			</td>
+		</xpath>
+	</template>
+
+</odoo>

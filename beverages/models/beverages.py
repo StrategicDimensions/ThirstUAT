@@ -128,6 +128,7 @@ class SelectedBeverages(models.Model):
 	classification = fields.Selection([('bar','Bar'),('equipment','Equipment'),('consumable','Consumable')])
 	consume_project_id = fields.Many2one('project.project','Project')
 	equipment_project_id = fields.Many2one('project.project','Project')
+	total = fields.Float(compute="_compute_total", string="Total")
 
 
         @api.depends('product_id')
@@ -149,7 +150,9 @@ class SelectedBeverages(models.Model):
 	    for obj in self:
                 obj.qty_on_hand = self.env['product.product'].with_context(context).search([('product_tmpl_id','=',obj.product_id.id)]).qty_available
 
-
+	    def _compute_total(self):
+	        for record in self:
+	            record.total = record.product_id.lst_price * record.qty_required
 
 
         @api.onchange('product_id')

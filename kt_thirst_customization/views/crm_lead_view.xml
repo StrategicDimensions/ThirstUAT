@@ -33,6 +33,9 @@
             <field name="model">crm.lead</field>
             <field name="inherit_id" ref="crm.crm_case_form_view_oppor"/>
             <field name="arch" type="xml">
+                <xpath expr="//form/header/button[2]" position="after">
+                    <button name="open_myform" string="Send SMS" type="object" class="oe_highlight"/>
+                </xpath>
                 <field name="team_id" position="after">
                     <field name="near_thirst_dep"/>
                     <field name="function_type"/>
@@ -56,5 +59,36 @@
             <field name="code">action = env['crm.lead'].change_salesperson(context.get('active_ids'))</field>
         </record>
 
+    	<record id="crm_case_form_view_leads_inherit_thirst" model="ir.ui.view">
+		    <field name="name">crm.case.form.view.leads.inherit.thirst</field>
+		    <field name="model">crm.lead</field>
+		    <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+			<field name="arch" type="xml">
+				<page name="extra" position="replace">
+                    <page name="extra" string="Extra Info">
+                        <group>
+                            <group string="Email">
+                                <field name="opt_out"/>
+                                <field name="message_bounce" readonly="1" groups="base.group_no_one,sales_team.group_sale_salesman"/>
+                            </group>
+                            <group string="Tracking" groups="base.group_multi_company,base.group_no_one,sales_team.group_sale_salesman" name="categorization">
+                                <field name="company_id"
+                                    groups="base.group_multi_company"
+                                    options="{'no_create': True}"/>
+                                <field name="campaign_id" />
+                                <field name="medium_id"/>
+                                <field name="source_id"/>
+                                <field name="referred"/>
+                            </group>
+                            <group string="Analysis" groups="base.group_no_one,sales_team.group_sale_salesman">
+                                <field name="date_open"/>
+                                <field name="date_closed"/>
+                                <field name="probability"/>
+                            </group>
+                        </group>
+                    </page>
+				</page>
+			</field>
+		</record>
 
 </odoo>

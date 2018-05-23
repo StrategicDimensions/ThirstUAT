@@ -7,6 +7,22 @@
 		name="kt_thirst_customization.report_stocksheet"
 	/>
 
+    <report id="report_equipmentsheet"
+        string="Equipment &amp; Glassware Sheet"
+        model="project.project"
+        report_type="qweb-pdf"
+        file="kt_thirst_customization.report_equipment_sheet"
+        name="kt_thirst_customization.report_equipment_sheet"
+    />
+
+    <report id="report_barsheet"
+        string="Bar Sheet"
+        model="project.project"
+        report_type="qweb-pdf"
+        file="kt_thirst_customization.report_bar_sheet"
+        name="kt_thirst_customization.report_bar_sheet"
+    />
+
 	<report id="report_project_staff"
                 string="Staff Report"
                 model="project.project"

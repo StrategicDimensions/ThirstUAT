@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<openerp>
+    <data>
+
+	<template id="ipay_acquirer_button">	
+	    <form action="https://i-pay.co.za/payment" method="POST">
+                <input type="hidden" name="SiteCode" t-att-value="sitecode"/>
+                <input type="hidden" name="CountryCode" t-att-value="country_code"/>
+		<input type="hidden" name="CurrencyCode" t-att-value="currency_code"/>
+		<input type="hidden" name="Amount" t-att-value="amount"/>	
+		<input type="hidden" name="TransactionReference" t-att-value="trans_ref"/>
+		<input type="hidden" name="BankReference" t-att-value="bank_ref"/>
+		<input type="hidden" name="CancelUrl" t-att-value="cancel_url"/>
+		<input type="hidden" name="ErrorUrl" t-att-value="error_url"/>	
+		<input type="hidden" name="SuccessUrl" t-att-value="success_url"/>
+		<input type="hidden" name="NotifyUrl" t-att-value="notify_url"/>
+		<input type="hidden" name="IsTest" t-att-value="is_test"/>
+		<input type="hidden" name="HashCheck" t-att-value="hash_check"/>
+		<button type="submit" width="100px" t-att-class="submit_class">
+                    <img t-if="not submit_txt" src="/payweb_ipay/static/src/img/ipay_logo.png"/>
+                    <span t-if="submit_txt"><t t-esc="submit_txt"/> <span class="fa fa-long-arrow-right"/></span>
+                </button>
+            </form>
+	</template>
+
+   <template id="unsuccessful">
+  <t t-call="website.layout">
+      <t t-set="additional_title">Shop - Confirmed</t>
+      <div id="wrap">
+        <div class="container oe_website_sale">
+
+          <ul class="wizard pull-right">
+              <li class="text-muted">Review Order<span class="chevron"></span></li>
+              <li class="text-muted">Shipping &amp; Billing<span class="chevron"></span></li>
+              <li class="text-muted">Payment<span class="chevron"></span></li>
+              <li class="text-primary">Confirmation<span class="chevron"></span></li>
+          </ul>
+          <div class="row">
+              <div class="col-md-8 oe_cart">
+                  <h4>Oops:</h4><br></br>
+                  <p>Payment Unsuccessful!<br></br><br></br>
+                  Please repeat the process and choose EFT as your payment method and we will send you a proforma invoice with our banking details for you to make the payment for your order. Once your payment is received your order will be processed immediately;
+                  <br></br><br></br>
+                  Thank you</p>
+                  <div class="clearfix"/>
+                  <div class="oe_structure"/>
+              </div>
+              <div class="col-md-3 col-md-offset-1 text-muted" id="right_column">
+                <h4>Bill To:</h4>
+                <div t-field="order.partner_invoice_id" t-field-options='{
+                    "widget": "contact",
+                    "fields": ["address", "name", "phone", "email"]
+                    }'/>
+                <t>
+                    <h4 class="mt32">Ship To:</h4>
+                    <t t-if="order.partner_shipping_id and order.partner_shipping_id.id != order.partner_invoice_id.id">
+                      <div t-field="order.partner_shipping_id" t-field-options='{
+                        "widget": "contact",
+                        "fields": ["address", "name", "phone"]
+                        }'/>
+                    </t>
+                    <address t-if="order.partner_shipping_id.id == order.partner_invoice_id.id">Ship to the same address</address>
+                </t>
+              </div>
+          </div>
+
+        </div>
+        <div class="oe_structure"/>
+      </div>
+
+  </t>
+</template>
+
+    </data>
+</openerp>
+
+                

@@ -26,6 +26,8 @@
 	<template id="assets" inherit_id='point_of_sale.assets' name="Stock Index">&lt;!DOCTYPE html&gt;            
             <xpath expr="//link[@id='pos-stylesheet']" position="after">
                 <link rel="stylesheet" href="/kt_thirst_customization/static/src/css/product_stock.css" />
+                <script src="/kt_thirst_customization/static/src/js/pos.js"
+                        type="text/javascript"/>
             </xpath>
         </template>	
 	
