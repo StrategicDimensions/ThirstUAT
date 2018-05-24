@@ -636,15 +636,7 @@ class Project(models.Model):
                     for bev_select_obj in self.beverages_selection_ids:
                        for obj in bev_select_obj.standard_beverage_ids:
                            product_obj = self.env['product.product'].search([('product_tmpl_id','=',obj.product_id.id)],limit=1)
-                           # stock_move_obj = self.env['stock.move'].create({'picking_id':stock_pick_obj.id,'product_id':product_obj.id,'product_uom_qty':obj.qty_required,'product_uom':product_obj.uom_id.id,'location_id':stock_pick_obj.location_id.id,'location_dest_id':stock_pick_obj.location_dest_id.id,'name':'['+str(product_obj.default_code)+'] '+str(product_obj.name),'date_expected':str(datetime.now())})
-                           stock_move_obj = self.env['stock.move'].create({'picking_id':stock_pick_obj.id,
-                                                                           'product_id':product_obj.id if product_obj else False,
-                                                                           'product_uom_qty':obj.qty_required if obj.qty_required else False,
-                                                                           'product_uom':product_obj.uom_id.id if product_obj and product_obj.uom_id else False,
-                                                                           'location_id':stock_pick_obj.location_id.id if stock_pick_obj and stock_pick_obj.location_id else False,
-                                                                           'location_dest_id':stock_pick_obj.location_dest_id.id if stock_pick_obj and stock_pick_obj.location_dest_id else False,
-                                                                           'name':'['+str(product_obj.default_code if product_obj.default_code else False)+'] '+str(product_obj.name if product_obj.name else False),
-                                                                           'date_expected':str(datetime.now())})
+                           stock_move_obj = self.env['stock.move'].create({'picking_id':stock_pick_obj.id,'product_id':product_obj.id,'product_uom_qty':obj.qty_required,'product_uom':product_obj.uom_id.id,'location_id':stock_pick_obj.location_id.id,'location_dest_id':stock_pick_obj.location_dest_id.id,'name':'['+str(product_obj.default_code)+'] '+str(product_obj.name),'date_expected':str(datetime.now())})
                     stock_pick_obj.action_confirm()
                     self.write({'transfered_stock':True})
 
