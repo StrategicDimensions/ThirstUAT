@@ -64,7 +64,7 @@
 				</tr>
 			    </thead>
 			    <tbody>
-				<t t-foreach="doc._get_all_stock_items()" t-as="item">
+				<t t-foreach="doc.with_context(stock_report=True)._get_all_stock_items()" t-as="item">
 				    <tr><td colspan="9" style="border:1px solid black;width:100%;"><b><t t-esc="item['category_name']"/></b></td></tr>
 				    <tr t-foreach="item['stock']" t-as="stock">
 					<td style="border:1px solid black;width:30%;">
@@ -216,7 +216,7 @@
 				</tr>
 			    </thead>
 			    <tbody>
-				<t t-foreach="doc._get_all_stock_items()" t-as="item">
+				<t t-foreach="doc.with_context(equipment_report=True)._get_all_stock_items()" t-as="item">
 				    <tr><td colspan="9" style="border:1px solid black;width:100%;"><b><t t-esc="item['category_name']"/></b></td></tr>
 				    <tr t-foreach="item['stock']" t-as="stock">
 					<td style="border:1px solid black;width:30%;">
@@ -367,7 +367,7 @@
 				</tr>
 			    </thead>
 			    <tbody>
-				<t t-foreach="doc._get_all_stock_items()" t-as="item">
+				<t t-foreach="doc.with_context(bar_report=True)._get_all_stock_items()" t-as="item">
 				    <tr><td colspan="9" style="border:1px solid black;width:100%;"><b><t t-esc="item['category_name']"/></b></td></tr>
 				    <tr t-foreach="item['stock']" t-as="stock">
 					<td style="border:1px solid black;width:30%;">

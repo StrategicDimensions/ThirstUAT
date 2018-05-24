@@ -35,10 +35,11 @@
 				</tr>
 			    </table>
 			    <div style="float:right">
-				<b>Tax Invoice <t t-esc="doc.number"/></b>
+			    <t t-if="not doc.number"><b>Draft Invoice</b></t>
+				<t t-if="doc.number"><b>Tax Invoice :<t t-esc="doc.number"/></b></t>
 			    </div>
-			    <div style="clear:both"/>			    
-			</div>					         
+			    <div style="clear:both"/>
+			</div>
 		    </div>
 		    <div class="row">
 			<h3>Thirst Bar Services (Pty) Ltd</h3>
@@ -144,11 +145,11 @@
 		    </t>
 		    <div class="row">
 			<div class="col-xs-8">
-			    <p><b>Remarks : </b><t t-esc="doc.partner_id.name"/> - <t t-esc="doc.get_event_date()['day']"/> <t t-esc="doc.get_event_date()['month']"/> <t t-esc="doc.get_event_date()['year']"/></p>
-			    <t><u>Banking Details :</u></t><p><br/></p>
+			    <p><b>Remarks : </b><t t-esc="doc.partner_id.name"/> - <t t-esc="doc.get_event_date()['day']"/> <t t-esc="doc.get_event_date()['month']"/> <t t-esc="doc.get_event_date()['year']"/></p><br/>
+                <p><b><u>Banking Details : </u></b></p>
 			    <table>
-				<tr><td>FNB Account</td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td><t t-esc="doc.get_banking_details()['acc_no']"/></td></tr>
-				<tr><td>Branch</td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td><t t-esc="doc.get_banking_details()['branch']"/></td></tr>
+				<tr><td><b>FNB Account</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td><t t-esc="doc.get_banking_details()['acc_no']"/></td></tr>
+				<tr><td><b>Branch</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td><t t-esc="doc.get_banking_details()['branch']"/></td></tr>
 			    </table>
 			    <p><br/></p>
 			    <div>
@@ -203,6 +204,9 @@
 		                    </td>
 		                </tr>
 		            </table>
+		            <div>
+                        <p><b>Payment Terms</b>:<t t-if="doc.payment_term_id"><t t-esc="doc.payment_term_id.note"/></t><t t-if="not doc.payment_term_id"><![CDATA[&nbsp;]]>-</t></p>
+                    </div>
 		        </div>
 		    </div>
 

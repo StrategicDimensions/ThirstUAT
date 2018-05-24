@@ -22,7 +22,8 @@ class ProjectProject(models.Model):
                 product_clsf_dic[obj.product_id.categ_id.id].append(obj)
 
         for key in product_clsf_dic.keys():
-            new_dic = {'category_name':self.env['product.category'].browse(int(key)).name,'type':'classification','stock':product_clsf_dic[key]}
+            categ_id = self.env['product.category'].browse(int(key))
+            new_dic = {'categ_id': categ_id, 'category_name':categ_id.name,'type':'classification','stock':product_clsf_dic[key]}
 	    results.update({new_dic['category_name']:new_dic})
 	
    	#beverages	
@@ -40,7 +41,8 @@ class ProjectProject(models.Model):
                     beverages_dic[obj.product_id.categ_id.id].append(obj)
 
         for key in beverages_dic.keys():
-            new_dic = {'category_name':self.env['product.category'].browse(int(key)).name,'type':'beverage','stock':beverages_dic[key]}
+            categ_id = self.env['product.category'].browse(int(key))
+            new_dic = {'categ_id': categ_id, 'category_name':categ_id.name,'type':'beverage','stock':beverages_dic[key]}
 	    results.update({new_dic['category_name']:new_dic})
 
 	#Materials
@@ -49,15 +51,28 @@ class ProjectProject(models.Model):
 		bom_dic[obj.product_id.categ_id.id] = [obj]
 	    else:
 		bom_dic[obj.product_id.categ_id.id].append(obj)
-
 	for key in bom_dic.keys():
-	    new_dic = {'category_name':self.env['product.category'].browse(int(key)).name,'type':'material','stock':bom_dic[key]}
+            categ_id = self.env['product.category'].browse(int(key))
+	    new_dic = {'categ_id': categ_id, 'category_name':categ_id.name,'type':'material','stock':bom_dic[key]}
 	    results.update({new_dic['category_name']:new_dic})
 
 	stock_list = []
 	for categ in sorted(results.keys()):
 	    stock_list.append(results[categ])
-	return stock_list
+        report_list = []
+        if self.env.context.get('stock_report'):
+            for each in stock_list:
+                if each['categ_id'] and each['categ_id'].print_on == 'stock':
+                    report_list.append(each)
+        if self.env.context.get('equipment_report'):
+            for each in stock_list:
+                if each['categ_id'] and each['categ_id'].print_on == 'equipment':
+                    report_list.append(each)
+        if self.env.context.get('bar_report'):
+            for each in stock_list:
+                if each['categ_id'] and each['categ_id'].print_on == 'bar':
+                    report_list.append(each)
+        return report_list
 
     def _get_setup_staff_ids(self):
 	return self.setup_staff_ids.sorted('role')

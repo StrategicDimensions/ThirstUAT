@@ -74,32 +74,33 @@
 	</t>
     </t>
     <t t-extend="PaymentScreenWidget">
-	<t t-jquery="div.paymentmethods-container" t-operation="after">
-        <t t-if="widget.pos.budget_available_amount &lt; 0">
-	        <div id="converted_cash_bar">
-		        <center><h2><font color="red">Budget Depleted, Converted to Cash Bar</font></h2></center>
-	        </div>
+        <t t-jquery="div.paymentmethods-container" t-operation="after">
+            <t t-if="!(widget.pos.budget_available_amount &gt; 0)">
+                <div>
+                    <center><h2><font color="red">Budget Depleted, Converted to Cash Bar</font></h2></center>
+                </div>
+            </t>
+
+            <t t-if="widget.pos.budget_available_amount &gt; 0">
+                <div>
+                    <center><p>Budget Available : </p><readonly>
+                        <input style="text-align:center;font-size: x-large;" t-att-value="widget.pos.budget_available_amount" type="text" name="amount" disabled="disabled"/></readonly></center>
+                </div>
+            </t>
         </t>
-        
-        <t t-if="widget.pos.budget_available_amount &gt; 0">
-    	    <div> 
-    	        <center><p>Budget Available : </p><readonly><input style="text-align:center" t-att-value="widget.pos.budget_available_amount" type="text" name="amount" disabled="disabled"/></readonly></center>
-    	    </div>
+        <t t-jquery="div.js_set_customer" t-operation="replace">
+                <div class='button js_set_project'><!-- jagadesh -->
+                    <!--<i class='fa fa-user' />-->
+                    <span class='js_customer_name'>
+                <t t-if="widget.pos.pos_session.project_id">
+                            <t t-esc="widget.pos.pos_session.project_id[1]"/>
+                        </t>
+                        <t t-if="!widget.pos.pos_session.project_id">
+                            Project
+                        </t>
+                    </span>
+                </div>
         </t>
-	</t>
-	<t t-jquery="div.js_set_customer" t-operation="replace">
-            <div class='button js_set_project'><!-- jagadesh -->
-                <!--<i class='fa fa-user' />-->
-                <span class='js_customer_name'>
-		    <t t-if="widget.pos.pos_session.project_id">
-                        <t t-esc="widget.pos.pos_session.project_id[1]"/>
-                    </t>
-                    <t t-if="!widget.pos.pos_session.project_id">
-                        Project
-                    </t>
-                </span>
-            </div>
-	</t>
     </t>
 
     <!-- Jagadeesh MAY18 start -->

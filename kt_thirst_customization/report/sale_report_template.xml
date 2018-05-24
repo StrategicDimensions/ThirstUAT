@@ -341,6 +341,9 @@
                                 </table>
                             </div>
                             <div class="col-xs-5">
+                                <div>
+                                    <p><b>Payment Terms</b>:<t t-if="doc.payment_term_id"><t t-esc="doc.payment_term_id.note"/></t><t t-if="not doc.payment_term_id"><![CDATA[&nbsp;]]>-</t></p>
+                                </div>
                                 <table>
                                     <tr><td><b>VAT</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td><t t-esc="company.vat"/></td></tr>
 

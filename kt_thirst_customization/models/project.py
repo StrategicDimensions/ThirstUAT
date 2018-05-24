@@ -634,7 +634,7 @@ class Project(models.Model):
                        stock_move_obj = self.env['stock.move'].create({'picking_id':stock_pick_obj.id,'product_id':obj.product_id.id,'product_uom_qty':obj.product_qty,'product_uom':obj.product_id.uom_id.id,'location_id':stock_pick_obj.location_id.id,'location_dest_id':stock_pick_obj.location_dest_id.id,'name':'['+str(obj.product_id.default_code)+'] '+str(obj.product_id.name),'date_expected':str(datetime.now())})
 
                     for bev_select_obj in self.beverages_selection_ids:
-                       for obj in bev_select_obj.selected_beverages_ids:
+                       for obj in bev_select_obj.standard_beverage_ids:
                            product_obj = self.env['product.product'].search([('product_tmpl_id','=',obj.product_id.id)],limit=1)
                            stock_move_obj = self.env['stock.move'].create({'picking_id':stock_pick_obj.id,'product_id':product_obj.id,'product_uom_qty':obj.qty_required,'product_uom':product_obj.uom_id.id,'location_id':stock_pick_obj.location_id.id,'location_dest_id':stock_pick_obj.location_dest_id.id,'name':'['+str(product_obj.default_code)+'] '+str(product_obj.name),'date_expected':str(datetime.now())})
                     stock_pick_obj.action_confirm()
@@ -1092,11 +1092,11 @@ class ProjectStaffCost(models.Model):
         analytic_accnt_obj = self.env['account.analytic.account'].search([('name','=',project_obj.name)],limit=1)
 
 
-        accnt_1_obj = self.env['account.account'].search([('code','=','111220'),('name','=','Staffing Account Payable')],limit=1)
+        accnt_1_obj = self.env['account.account'].search([('code','=','200220'),('name','=','Staff Payable Control Account (Odoo)')],limit=1)
         move_line1_vals = {'account_id':accnt_1_obj.id,'partner_id':staff_obj.employee_id.partner_id.id,'name':ref,'credit':staff_obj.total_cost}
 
 
-        accnt_2_obj = self.env['account.account'].search([('code','=','500108'),('name','=','Cost of Sales - Staffing')],limit=1)
+        accnt_2_obj = self.env['account.account'].search([('code','=','500520'),('name','=','COS - Events - Staff - Wages')],limit=1)
         move_line2_vals = {'account_id':accnt_2_obj.id,'partner_id':staff_obj.employee_id.partner_id.id,'name':ref,'analytic_account_id':analytic_accnt_obj.id,'debit':staff_obj.total_cost }
 
         accnt_move_obj = self.env['account.move'].create({ 'journal_id':journal_id,'ref':ref,'date':date.today(),

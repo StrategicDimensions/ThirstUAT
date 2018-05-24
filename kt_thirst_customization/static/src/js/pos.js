@@ -89,6 +89,7 @@ odoo.define('kt_thirst_customization', function(require) {
     
     PaymentScreenWidget.include({
         validate_order: function (force_validation) {
+            var self = this;
             var order = this.pos.get_order();
             this._super(force_validation);
             if (!order.is_paid() && !this.order_is_valid(force_validation) && this.pos.budget_available_amount) {
@@ -99,6 +100,19 @@ odoo.define('kt_thirst_customization', function(require) {
                 this.pos.budget_available_amount =  round_pr(Math.max(0, new_budget), this.pos.currency.rounding);
                 this.finalize_validation();
             }
-        }
+        },
+        finalize_validation: function() {
+            var self = this;
+            var order = this.pos.get_order();
+            this._super();
+             _.each(order.get_orderlines(), function (order_line) {
+                console.log("order  line===",order_line)
+                if(order_line.get_product().type == 'product'){
+                    order_line.get_product().qty_available = order_line.get_product().qty_available - order_line.get_quantity();
+                    self.pos.chrome.screens['products'].product_list_widget.product_cache.clear_node(order_line.get_product().id);
+                }
+             });
+        },
     });
+    
 });

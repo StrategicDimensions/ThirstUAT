@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data noupdate="1">
-    <delete id="project.group_project_manager" model="res.groups"/>
-</data>
+
     <record id="group_project_staffing" model="res.groups">
         <field name="name">Project Staffing</field>
         <field name="category_id" ref="base.module_category_project_management"/>
@@ -10,10 +8,10 @@
         <field name="users" eval="[(4, ref('base.user_root'))]"/>
     </record>
 
-    <record id="group_project_manager" model="res.groups">
+    <record id="project.group_project_manager" model="res.groups">
         <field name="name">Manager</field>
         <field name="category_id" ref="base.module_category_project_management"/>
-        <field name="implied_ids" eval="[(4, ref('group_project_staffing'))]"/>
+        <field name="implied_ids" eval="[(4, ref('kt_thirst_customization.group_project_staffing'))]"/>
         <field name="users" eval="[(4, ref('base.user_root'))]"/>
     </record>
 
