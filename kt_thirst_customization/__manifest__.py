@@ -10,7 +10,7 @@
     'website': 'http://www.strategicdimensions.co.za',
     'depends' : ['base', 'crm', 'point_of_sale', 'base_setup', 'sale', 'purchase', 'hr', 'account', 'project', 'product', 'beverages', 'website_quote', 'partner_credit_limit', 'smsclient', 'website_form_editor', 'website_sale', 'sale_margin'],
     'data': [
-            'security/thirst_security.xml',
+#             'security/thirst_security.xml',
             'security/ir.model.access.csv',
             'views/project_view.xml',
             'views/sale_view.xml',
