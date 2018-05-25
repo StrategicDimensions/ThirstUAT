@@ -30,7 +30,7 @@ odoo.define('kt_thirst_customization', function(require) {
 
     var _modelproto = models.PosModel.prototype;
     models.PosModel = models.PosModel.extend({
-        load_server_data: function(){
+        load_server_data: function() {
             var self = this;
             var product_index = _.findIndex(this.models, function (model) {
                 return model.model === "product.product";
@@ -56,6 +56,16 @@ odoo.define('kt_thirst_customization', function(require) {
                 });
             });
         },
+        push_order: function (order, opts) {
+            var self = this;
+            var def = _modelproto.push_order.apply(this, arguments);
+                return def.then(function () {
+                    new Model('pos.order').call("fetch_available_budget", [self.pos_session.project_id[0]]
+                ).then(function (amount){
+                    self.budget_available_amount = amount;
+                })
+            });
+        }
     });
     
     

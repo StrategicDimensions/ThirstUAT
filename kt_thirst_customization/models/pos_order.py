@@ -8,6 +8,11 @@ class PosOrder(models.Model):
     ordered_type = fields.Selection([('cash_bar','Cash Bar'),('event_budget','Event Budget')],string="Order Type")
 
     @api.model
+    def fetch_available_budget(self, project_id):
+        project = self.env['project.project'].browse(project_id)
+        return project.budget_available_amount
+        
+    @api.model
     def _order_fields(self, ui_order):
         cust_session_id = self.env['pos.session'].browse(ui_order['pos_session_id'])
         process_line = partial(self.env['pos.order.line']._order_line_fields)

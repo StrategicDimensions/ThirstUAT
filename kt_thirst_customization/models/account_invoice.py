@@ -36,6 +36,19 @@ class AccountInvoiceLine(models.Model):
     hours = fields.Float('Hours',default=1.00)
     days = fields.Float('Days',default=1.00)
     
+    
+    @api.model
+    def create(self, vals):
+        res = super(AccountInvoiceLine, self).create(vals)
+        if res.invoice_id.origin and not res.account_analytic_id:
+            sale_order_id = self.env['sale.order'].search([('name', '=', res.invoice_id.origin)], limit=1, order="id desc")
+            pos_order_id = self.env['pos.order'].search([('name', '=', res.invoice_id.origin)], limit=1, order="id desc")
+            if sale_order_id and sale_order_id.project_project_id:
+                analytic_accnt_obj = self.env['account.analytic.account'].search([('name','=',sale_order_id.project_project_id.name)],limit=1)
+            if pos_order_id and pos_order_id.project_id:
+                analytic_accnt_obj = self.env['account.analytic.account'].search([('name','=',pos_order_id.project_id.name)],limit=1)
+            res.update({'account_analytic_id': analytic_accnt_obj.id if analytic_accnt_obj else False})
+        return res
 
     @api.one
     @api.depends('price_unit', 'discount', 'invoice_line_tax_ids', 'quantity',
