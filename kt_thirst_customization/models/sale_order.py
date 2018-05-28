@@ -184,7 +184,7 @@ class SaleOrder(models.Model):
 
                     #to create bar materials
                     mrp_bom_obj = self.env['mrp.bom'].search([('product_tmpl_id','=',data.product_id.product_tmpl_id.id)])
-                    project.product_bom_ids = [(0,0,{'product_code':line.product_id.default_code,'product_id':line.product_id.id,'classification':line.product_id.classification,'product_qty':line.product_qty,'on_hand':line.product_id.qty_available,'forecasted':line.product_id.virtual_available,'product_uom_id':line.product_uom_id.id}) for line in mrp_bom_obj.bom_line_ids]
+                    project.product_bom_ids = [(0,0,{'product_code':line.product_id.default_code,'product_id':line.product_id.id,'classification':line.product_id.classification,'product_qty':line.product_qty * data.product_uom_qty,'on_hand':line.product_id.qty_available,'forecasted':line.product_id.virtual_available,'product_uom_id':line.product_uom_id.id}) for line in mrp_bom_obj.bom_line_ids]
 
         self.send_confirmation_email()
         return True

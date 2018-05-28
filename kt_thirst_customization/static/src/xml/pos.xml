@@ -87,6 +87,10 @@
                         <input style="text-align:center;font-size: x-large;" t-att-value="widget.pos.budget_available_amount" type="text" name="amount" disabled="disabled"/></readonly></center>
                 </div>
             </t>
+
+            <div class="budget" style="margin:15px;">
+                <div class="add_budget_btn">Add Budget</div>
+            </div>
         </t>
         <t t-jquery="div.js_set_customer" t-operation="replace">
                 <div class='button js_set_project'><!-- jagadesh -->

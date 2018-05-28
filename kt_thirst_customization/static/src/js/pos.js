@@ -2,6 +2,7 @@ odoo.define('kt_thirst_customization', function(require) {
     "use strict";
 
     var models = require('point_of_sale.models');
+    var gui = require('point_of_sale.gui');
     var Model = require('web.DataModel');
     var DB = require('point_of_sale.DB');
     var core = require('web.core');
@@ -12,6 +13,57 @@ odoo.define('kt_thirst_customization', function(require) {
 
     var PaymentScreenWidget = screens.PaymentScreenWidget;
 
+    screens.ProductCategoriesWidget.include({
+        renderElement: function(){
+            var el_str  = QWeb.render(this.template, {widget: this});
+            var el_node = document.createElement('div');
+
+            el_node.innerHTML = el_str;
+            el_node = el_node.childNodes[1];
+
+            if(this.el && this.el.parentNode){
+                this.el.parentNode.replaceChild(el_node,this.el);
+            }
+
+            this.el = el_node;
+
+            var withpics = this.pos.config.iface_display_categ_images;
+
+            var list_container = el_node.querySelector('.category-list');
+            if (list_container) {
+                if (!withpics) {
+                    list_container.classList.add('simple');
+                } else {
+                    list_container.classList.remove('simple');
+                }
+                for(var i = 0, len = this.subcategories.length; i < len; i++){
+                    var products = this.pos.db.get_product_by_category(this.subcategories[i].id)
+                    if(products.length > 0){
+                        list_container.appendChild(this.render_category(this.subcategories[i],withpics));
+
+                    }
+                }
+            }
+
+            var buttons = el_node.querySelectorAll('.js-category-switch');
+            for(var i = 0; i < buttons.length; i++){
+                buttons[i].addEventListener('click',this.switch_category_handler);
+            }
+
+            var products = this.pos.db.get_product_by_category(this.category.id);
+            this.product_list_widget.set_product_list(products); // FIXME: this should be moved elsewhere ...
+
+            this.el.querySelector('.searchbox input').addEventListener('keypress',this.search_handler);
+
+            this.el.querySelector('.searchbox input').addEventListener('keydown',this.search_handler);
+
+            this.el.querySelector('.search-clear').addEventListener('click',this.clear_search_handler);
+
+            if(this.pos.config.iface_vkeyboard && this.chrome.widget.keyboard){
+                this.chrome.widget.keyboard.connect($(this.el.querySelector('.searchbox input')));
+            }
+        },
+     });
     
     var QWeb = core.qweb;
     var _t = core._t;
@@ -20,9 +72,10 @@ odoo.define('kt_thirst_customization', function(require) {
 
     models.load_models({
         model: 'project.project',
-        fields: ['budget_available_amount'],
+        fields: ['budget_available_amount','partner_id'],
         domain: function (self){ return [['id','=', self.pos_session.project_id[0]]]; },
         loaded: function (self, res){
+            self.project_data = res;
             self.budget_available_amount = res[0]['budget_available_amount'];
         },
     }, {after: 'pos.session'});
@@ -98,6 +151,31 @@ odoo.define('kt_thirst_customization', function(require) {
     });
     
     PaymentScreenWidget.include({
+        show: function(){
+            this._super();
+            var self = this;
+            $('.add_budget_btn').click(function(){
+                self.gui.show_popup('number',{
+                    'title': 'Add Budget',
+                     confirm: function(){
+                        var req_partner_id = 0;
+                        var budget_amount = this.inputbuffer;
+                        var project_id = self.pos.pos_session.project_id;
+                        _.each(self.pos.project_data,function(project_detail){
+                            req_partner_id = project_detail.partner_id[0];
+                        });
+                        if(project_id){
+                            new Model("beverage.budget").get_func("create")({
+                                'project_id': project_id[0],
+                                'budget_amount': budget_amount,
+                                'req_partner_id':req_partner_id
+                            });
+
+                        }
+                     },
+                });
+            });
+        },
         validate_order: function (force_validation) {
             var self = this;
             var order = this.pos.get_order();
@@ -116,7 +194,6 @@ odoo.define('kt_thirst_customization', function(require) {
             var order = this.pos.get_order();
             this._super();
              _.each(order.get_orderlines(), function (order_line) {
-                console.log("order  line===",order_line)
                 if(order_line.get_product().type == 'product'){
                     order_line.get_product().qty_available = order_line.get_product().qty_available - order_line.get_quantity();
                     self.pos.chrome.screens['products'].product_list_widget.product_cache.clear_node(order_line.get_product().id);

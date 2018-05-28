@@ -99,7 +99,7 @@
 				        <t t-foreach="layout_category['lines']" t-as="l">
 				            <tr>
 						<td style="font-size:11px;"><span t-field="l.product_id.default_code"/></td>
-				                <td style="font-size:11px;"><span t-field="l.product_id.name"/></td>
+				                <td style="font-size:11px;"><span t-field="l.name"/></td>
 				                <td class="text-right">
 				                    <span t-field="l.quantity"/>
 				                    <span t-field="l.uom_id" />
@@ -148,9 +148,9 @@
 			    <p><b>Remarks : </b><t t-esc="doc.partner_id.name"/> - <t t-esc="doc.get_event_date()['day']"/> <t t-esc="doc.get_event_date()['month']"/> <t t-esc="doc.get_event_date()['year']"/></p><br/>
                 <p><b><u>Banking Details : </u></b></p>
 			    <table>
-				<tr><td><b>FNB Account</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td><t t-esc="doc.get_banking_details()['acc_no']"/></td></tr>
-				<tr><td><b>Branch</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td><t t-esc="doc.get_banking_details()['branch']"/></td></tr>
-			    </table>
+                    <tr><td><b>FNB Account</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td>62085815143<!--<t t-esc="doc.get_banking_details()['acc_no']"/>--></td></tr>
+                    <tr><td><b>Branch</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td>250655<!--<t t-esc="doc.get_banking_details()['branch']"/>--></td></tr>
+                </table>
 			    <p><br/></p>
 			    <div>
 			    <t t-set="company" t-value="doc.get_company()"/>
@@ -205,7 +205,7 @@
 		                </tr>
 		            </table>
 		            <div>
-                        <p><b>Payment Terms</b>:<t t-if="doc.payment_term_id"><t t-esc="doc.payment_term_id.note"/></t><t t-if="not doc.payment_term_id"><![CDATA[&nbsp;]]>-</t></p>
+                        <p><b>Payment Terms : </b><t style="margin-left:10px;" t-if="doc.payment_term_id"><t t-esc="doc.payment_term_id.note"/></t><t t-if="not doc.payment_term_id"><![CDATA[&nbsp;]]>-</t></p>
                     </div>
 		        </div>
 		    </div>

@@ -35,7 +35,7 @@ class SaleOrder(models.Model):
 
     @api.multi
     def get_banking_details(self):
-        bank_journal_obj = self.env['account.journal'].search([('name','=','Bank')],limit=1)
+        bank_journal_obj = self.env['account.journal'].search([('type','=','bank'), ('bank_id.bic', '=', 'BNK2')],limit=1, order="id desc")
         if bank_journal_obj:
             return {'acc_no':bank_journal_obj.bank_acc_number,'branch':bank_journal_obj.bank_id and bank_journal_obj.bank_id.name or False}
         else:

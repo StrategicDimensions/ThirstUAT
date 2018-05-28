@@ -940,7 +940,7 @@ class BeverageBudget(models.Model):
     project_id = fields.Many2one('project.project','Project')
     budget_amount = fields.Float('Budget Amount')
     req_partner_id = fields.Many2one('res.partner','Requested By')
-    date_req = fields.Datetime('Date Requested')
+    date_req = fields.Datetime('Date Requested', default=datetime.now())
 
 
 '''class Employee(models.Model):

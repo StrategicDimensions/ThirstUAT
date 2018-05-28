@@ -1,4 +1,5 @@
-from odoo import fields,models,api
+from odoo import fields,models,api, _
+
 
 class StockLocation(models.Model):
     _inherit = 'stock.location'
@@ -41,7 +42,6 @@ class StockLocation(models.Model):
         for prd_id in service_products.ids:
             if prd_id not in products_on_hand.keys():
                 products_on_hand.update({prd_id:0})
-
         return {'product_ids' : products.ids + service_products.ids,'products_on_hand': products_on_hand,'pos_categs':pos_categ_ids }
 
 
@@ -58,5 +58,20 @@ class StockPicking(models.Model):
                 if self.project_id.next_transfer_type != 4 and self.project_id.next_transfer_type < 8:
                     self.project_id.next_transfer_type += 1
                     self.project_id.transfer_stock_to_function_location(self.id)
-        return res 
-	    
+        return res
+
+    @api.multi
+    def do_transfer(self):
+        res = super(StockPicking, self).do_transfer()
+        pickings = self.env['stock.picking'].search([('origin', '=', self.project_id.project_number)])
+        print '\n\npickings', pickings
+        return {
+                'type': 'ir.actions.act_window',
+                'name': _('Stock Operations'),
+                'res_model': 'stock.picking',
+                'view_type': 'form',
+                'view_mode': 'tree,form',
+                'target': 'current',
+                'domain': [('id', 'in', pickings.ids)]
+                }
+

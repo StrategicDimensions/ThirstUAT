@@ -28,7 +28,16 @@ class AccountInvoice(models.Model):
                     tax_grouped[key]['amount'] += val['amount']
                     tax_grouped[key]['base'] += val['base']
         return tax_grouped
-    
+
+    @api.multi
+    def invoice_print(self):
+        """ Print the invoice and mark it as sent, so that we can see more
+            easily the next step of the workflow
+        """
+        self.ensure_one()
+        self.sent = True
+        return self.env['report'].get_action(self, 'kt_thirst_customization.report_invoice_new')
+
 
 class AccountInvoiceLine(models.Model):
     _inherit = 'account.invoice.line'

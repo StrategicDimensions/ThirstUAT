@@ -284,11 +284,11 @@
                     <div class="row">
                         <div class="col-xs-7">
                             <p><b>Remarks : </b><t t-esc="doc.partner_id.name"/> - <t t-esc="doc.get_event_date()['day']"/> <t t-esc="doc.get_event_date()['month']"/> <t t-esc="doc.get_event_date()['year']"/></p>
-                            <t><u>Banking Details :</u></t><p></p>
+                            <p><b><u>Banking Details : </u></b></p>
                             <table>
-                                <tr><td>FNB Account</td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td>62085815143<!--<t t-esc="doc.get_banking_details()['acc_no']"/>--></td></tr>
-                                <tr><td>Branch</td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td>250655<!--<t t-esc="doc.get_banking_details()['branch']"/>--></td></tr>
-                            </table>
+			                    <tr><td><b>FNB Account</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td>62085815143<!--<t t-esc="doc.get_banking_details()['acc_no']"/>--></td></tr>
+			                    <tr><td><b>Branch</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td>250655<!--<t t-esc="doc.get_banking_details()['branch']"/>--></td></tr>
+			                </table>
 			</div>
 			<div class="col-xs-5 pull-right">
                             <div class="row" name="total">
@@ -342,8 +342,8 @@
                             </div>
                             <div class="col-xs-5">
                                 <div>
-                                    <p><b>Payment Terms</b>:<t t-if="doc.payment_term_id"><t t-esc="doc.payment_term_id.note"/></t><t t-if="not doc.payment_term_id"><![CDATA[&nbsp;]]>-</t></p>
-                                </div>
+			                        <p><b>Payment Terms : </b><t style="margin-left:10px;" t-if="doc.payment_term_id"><t t-esc="doc.payment_term_id.note"/></t><t t-if="not doc.payment_term_id"><![CDATA[&nbsp;]]>-</t></p>
+			                    </div>
                                 <table>
                                     <tr><td><b>VAT</b></td><td><![CDATA[&nbsp;]]>:<![CDATA[&nbsp;]]></td><td><t t-esc="company.vat"/></td></tr>
 
