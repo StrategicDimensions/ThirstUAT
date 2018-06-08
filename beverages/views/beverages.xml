@@ -217,20 +217,20 @@
 							<notebook>
 							<page string="Standard Beverages">
                                                         <field name="standard_beverage_ids" readonly="0">
-                                                            <tree create="true" delete="true">
-                                                                <field name="product_id" />
-                                                                <field name="product_code" />
-                                                                <field name="prod_type" />
-                                                                <field name="category_id" />
-                                                                <field name="sub_category_id" />
-                                                                <field name="qty_required" sum="Total"/>
-                                                                <field name="uom_id"/>
-                                                                <field name="uom_po_id"/>
+                                                            <tree create="true" delete="true" editable="bottom">
+                                                                <field name="product_id" readonly="True"/>
+                                                                <field name="product_code" readonly="True"/>
+                                                                <field name="prod_type" readonly="True"/>
+                                                                <field name="category_id" readonly="True"/>
+                                                                <field name="sub_category_id" readonly="True"/>
+                                                                <field name="qty_required" sum="Total" />
+                                                                <field name="uom_id" readonly="True"/>
+                                                                <field name="uom_po_id" readonly="True"/>
                                                                 <!--<field name="on_hand" />-->
-                                                                <field name="total" sum="Total"/>
-								<field name="qty_on_hand" />
-                                                                <field name="forecasted" />
-                                                                <field name="variance" />
+                                                                <field name="qty_on_hand" readonly="True"/>
+                                                                <field name="forecasted" readonly="True"/>
+                                                                <field name="variance" readonly="True"/>
+                                                                <field name="total" sum="Total" readonly="True"/>
                                                             </tree>
                                                             <form>
                                                                 <group>
@@ -252,19 +252,20 @@
 							<notebook>
                                                         <page string="Premium Beverages">
                                                         <field name="premium_beverage_ids" readonly="0">
-                                                            <tree create="true" delete="true">
-                                                                <field name="product_id" />
-                                                                <field name="product_code" />
-                                                                <field name="prod_type" />
-                                                                <field name="category_id" />
-                                                                <field name="sub_category_id" />
+                                                            <tree create="true" delete="true" editable="bottom">
+                                                                <field name="product_id" readonly="True"/>
+                                                                <field name="product_code" readonly="True"/>
+                                                                <field name="prod_type" readonly="True"/>
+                                                                <field name="category_id" readonly="True"/>
+                                                                <field name="sub_category_id" readonly="True"/>
                                                                 <field name="qty_required" />
-                                                                <field name="uom_id"/>
-                                                                <field name="uom_po_id"/>
+                                                                <field name="uom_id" readonly="True"/>
+                                                                <field name="uom_po_id" readonly="True"/>
 								<!--<field name="on_hand" />-->
-                                                                <field name="qty_on_hand" />
-                                                                <field name="forecasted" />
-                                                                <field name="variance" />
+                                                                <field name="qty_on_hand" readonly="True"/>
+                                                                <field name="forecasted" readonly="True"/>
+                                                                <field name="variance" readonly="True"/>
+                                                                <field name="total" sum="Total" readonly="True"/>
                                                             </tree>
                                                             <form>
                                                                 <group>

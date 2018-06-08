@@ -28,3 +28,11 @@
 
 }
 
+.button_reload{
+    font-size: 20px;
+    font-weight: bold;
+    float: right;
+    margin-right: 17%;
+    margin-top: -12%;
+}
+

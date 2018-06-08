@@ -83,8 +83,18 @@
 
             <t t-if="widget.pos.budget_available_amount &gt; 0">
                 <div>
-                    <center><p>Budget Available : </p><readonly>
-                        <input style="text-align:center;font-size: x-large;" t-att-value="widget.pos.budget_available_amount" type="text" name="amount" disabled="disabled"/></readonly></center>
+                    <center>
+                        <p>Budget Available : </p>
+                        <span class='button_reload'>
+                            <i class="fa fa-refresh" aria-hidden="true"></i>
+                        </span>
+                        <readonly>
+                            <input id="budget_amount"
+                                   style="text-align:center;font-size: x-large;"
+                                   t-att-value="widget.pos.budget_available_amount"
+                                   type="text" name="amount" disabled="disabled"/>
+                        </readonly>
+                    </center>
                 </div>
             </t>
 

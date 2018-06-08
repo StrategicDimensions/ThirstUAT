@@ -134,6 +134,7 @@
 			    <field name="function_venue"/>
 			    <field name="budget_amt"/>
 			    <field name="division_ids" widget="many2many_tags" readonly="1"/>
+			    <field name="locked"/>
 			    <field name="next_transfer_type" readonly="1" invisible="1"/>
 			</group>
 		    </group>

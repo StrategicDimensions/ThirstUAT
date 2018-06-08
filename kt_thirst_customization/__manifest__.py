@@ -15,6 +15,7 @@
             'views/project_view.xml',
             'views/sale_view.xml',
             'views/templates.xml',
+            'views/template_bar_menu.xml',
             'views/get_a_quote.xml',
             'data/crm_form_data.xml',
             'views/website_form_editor.xml',

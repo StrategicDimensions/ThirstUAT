@@ -1,4 +1,5 @@
-from odoo import fields,models,api
+from odoo import fields,models,api,_
+from odoo.exceptions import UserError, ValidationError
 from functools import partial
 
 class PosOrder(models.Model):
@@ -81,7 +82,6 @@ class PosOrder(models.Model):
         ''' overrided base method'''
         #return self._create_account_move_line()
         return True
-
 
     @api.model
     def create(self, values):

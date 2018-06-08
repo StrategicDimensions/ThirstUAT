@@ -10,7 +10,6 @@ odoo.define('kt_thirst_customization', function(require) {
     var utils = require('web.utils');
     var round_pr = utils.round_precision;
 
-
     var PaymentScreenWidget = screens.PaymentScreenWidget;
 
     screens.ProductCategoriesWidget.include({
@@ -120,9 +119,7 @@ odoo.define('kt_thirst_customization', function(require) {
             });
         }
     });
-    
-    
-    
+
     DB.include({
         add_products: function(products){
             var self = this;
@@ -148,32 +145,73 @@ odoo.define('kt_thirst_customization', function(require) {
             $.extend(submitted_order,new_val);
             return submitted_order;
         },
+        get_change: function(paymentline) {
+            if(this.get_paymentlines().length > 0){
+                return this._super(paymentline)
+            } else{
+                return round_pr(Math.max(0,0), this.pos.currency.rounding);
+            }
+        },
     });
     
     PaymentScreenWidget.include({
         show: function(){
             this._super();
             var self = this;
-            $('.add_budget_btn').click(function(){
-                self.gui.show_popup('number',{
-                    'title': 'Add Budget',
-                     confirm: function(){
-                        var req_partner_id = 0;
-                        var budget_amount = this.inputbuffer;
-                        var project_id = self.pos.pos_session.project_id;
-                        _.each(self.pos.project_data,function(project_detail){
-                            req_partner_id = project_detail.partner_id[0];
+            $('.button_reload').click(function(){
+                var project_id = self.pos.pos_session.project_id;
+                if(project_id){
+                    new Model("project.project").get_func("search_read")([['id', '=', project_id[0]]])
+                    .then(function(res){
+                        _.each(res,function(project){
+                            $("#budget_amount").val(project.budget_available_amount)
                         });
-                        if(project_id){
-                            new Model("beverage.budget").get_func("create")({
-                                'project_id': project_id[0],
-                                'budget_amount': budget_amount,
-                                'req_partner_id':req_partner_id
-                            });
+                   });
+                }
+            });
 
-                        }
-                     },
-                });
+            $('.add_budget_btn').click(function(){
+                if(self.pos.get_cashier().pos_security_pin){
+                    return self.gui.ask_password(self.pos.get_cashier().pos_security_pin).then(function(){
+                        self.gui.show_popup('number',{
+                            'title': 'Add Budget',
+                             confirm: function(){
+                                var req_partner_id = 0;
+                                var budget_amount = this.inputbuffer;
+                                var project_id = self.pos.pos_session.project_id;
+                                _.each(self.pos.project_data,function(project_detail){
+                                    req_partner_id = project_detail.partner_id[0];
+                                });
+                                if(project_id){
+                                    new Model("beverage.budget").get_func("create")({
+                                        'project_id': project_id[0],
+                                        'budget_amount': budget_amount,
+                                        'req_partner_id':req_partner_id
+                                    });
+                                }
+                             },
+                        });
+                    });
+                } else{
+                    self.gui.show_popup('number',{
+                        'title': 'Add Budget',
+                         confirm: function(){
+                            var req_partner_id = 0;
+                            var budget_amount = this.inputbuffer;
+                            var project_id = self.pos.pos_session.project_id;
+                            _.each(self.pos.project_data,function(project_detail){
+                                req_partner_id = project_detail.partner_id[0];
+                            });
+                            if(project_id){
+                                new Model("beverage.budget").get_func("create")({
+                                    'project_id': project_id[0],
+                                    'budget_amount': budget_amount,
+                                    'req_partner_id':req_partner_id
+                                });
+                            }
+                         },
+                    });
+                }
             });
         },
         validate_order: function (force_validation) {

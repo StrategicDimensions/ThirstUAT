@@ -22,7 +22,7 @@ class SaleOrder(models.Model):
     division_ids = fields.Many2many('division.division','quote_div_rel','quote_id','division_id',string="Division",default=lambda self: self._get_default_division_ids())
     budget_amt = fields.Float('Budget')
 
-    beverage_menu_id = fields.Many2one('beverages',string="Beverage Memu") 
+    beverage_menu_id = fields.Many2one('beverages',string="Beverage Memu")
     premium_beverages = fields.Boolean(string="Premium Beverages ?")
     project_project_id = fields.Many2one('project.project',string="Project")
     ignore_beverage_selection = fields.Boolean('Ignore Beverages Selection')
@@ -185,7 +185,25 @@ class SaleOrder(models.Model):
                     #to create bar materials
                     mrp_bom_obj = self.env['mrp.bom'].search([('product_tmpl_id','=',data.product_id.product_tmpl_id.id)])
                     project.product_bom_ids = [(0,0,{'product_code':line.product_id.default_code,'product_id':line.product_id.id,'classification':line.product_id.classification,'product_qty':line.product_qty * data.product_uom_qty,'on_hand':line.product_id.qty_available,'forecasted':line.product_id.virtual_available,'product_uom_id':line.product_uom_id.id}) for line in mrp_bom_obj.bom_line_ids]
-
+                
+                for each_bev_menu in project.beverages_selection_ids:
+                    for each_prod in each_bev_menu.beverage_menu_id.beverage_product_ids:
+                        if each_prod.default_selection:
+                            if not request.env['selected.beverages'].sudo().search(
+                                [('product_id', '=', each_prod.product_product_id.id), ('bev_select_id', '=', each_bev_menu.id)]):
+                                beverages_selection = request.env['beverages.selection'].sudo().search(
+                                    [('project_id', '=', project.id), ('beverage_menu_id', '=', each_bev_menu.beverage_menu_id.id)])
+                                obj = request.env['selected.beverages'].sudo().create(
+                                    {'sale_order_id': project.sale_order_id.id, 'category_id': each_prod.category_id.id,
+                                     'sub_category_id': each_prod.sub_categ_id.id, 'product_id': each_prod.product_product_id.id,
+                                     'product_name': each_prod.product_product_id.name,
+                                     'product_code': each_prod.product_product_id.default_code, 'prod_type': each_prod.prod_type,
+                                     'classification': each_prod.product_product_id.classification, 'on_hand': each_prod.product_product_id.qty_available,
+                                     'forecasted': each_prod.product_product_id.virtual_available, 'variance': -(each_prod.product_product_id.qty_available),
+                                     'bev_select_id': each_bev_menu.id,
+                                     'standard_bev_select_id': beverages_selection.id if each_prod.prod_type == 'Standard' else False,
+                                     'premium_bev_select_id': beverages_selection.id if each_prod.prod_type == 'Premium' else False,
+                                     })
         self.send_confirmation_email()
         return True
 
@@ -201,23 +219,14 @@ class SaleOrder(models.Model):
     def goto_beverages_selection(self):
         beverages = self.env['beverages'].search([])
         product_template_ids = beverages.mapped('product_id').ids
-        products = self.env['product.product'].search([('product_tmpl_id', 'in', product_template_ids)])
+        products = self.env['product.product'].search(
+            [('product_tmpl_id', 'in', product_template_ids)])
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/beverage_selection/%s/standard' % (self.project_project_id.id),
+            'target': 'new',
+        }
 
-        if 'Cocktail Bar' in [line.product_id.name for line in self.order_line]:
-            bar = 'cocktail_bar'
-        elif any(line.product_id.id in products.ids for line in self.order_line):
-            bar = 'full_bar'
-        else:
-            bar = False
-        if bar and self.project_project_id:
-            res = {
-                'type': 'ir.actions.act_url',
-                'url':   '/beverage_selection/%s/%s/standard'%(bar,self.project_project_id.id),
-                'target': 'new',
-            }
-            return res
-        else:
-            raise ValidationError("Can't go for beverage selection")
 
     @api.multi
     def send_confirmation_email(self):
@@ -238,7 +247,7 @@ class SaleOrder(models.Model):
     def get_beverage_selection_url(self):
         cocktail_bar = False
         full_bar = False
-        #go_for_selection = False 
+        #go_for_selection = False
         selection_type = False
         url = False
         for order in self.order_line:
@@ -257,7 +266,7 @@ class SaleOrder(models.Model):
         return {'type':selection_type,'url':url}
 
 
-    #Jagadeesh JUL19 start 
+    #Jagadeesh JUL19 start
     @api.multi
     def action_cancel(self):
          view_id = self.env['ir.model.data'].get_object_reference('kt_thirst_customization','quotation_cancel_form')[1]
@@ -271,7 +280,7 @@ class SaleOrder(models.Model):
             'type':'ir.actions.act_window',
             'target':'new',
             }
-    #Jagadeesh JUL19 end    
+    #Jagadeesh JUL19 end
 
     @api.multi
     def print_quotation(self):
@@ -286,8 +295,6 @@ class SaleOrder(models.Model):
             'target': 'self',
             'url': '/quote/%s/%s' % (self.id, self.access_token)
         }
-
-
 
     @api.multi
     def action_quotation_send(self):
@@ -330,7 +337,7 @@ class QuotaionCancel(models.Model):
     _name = 'quotation.cancel'
 
     lost_reason_id = fields.Many2one('crm.lost.reason','Cancel Reason')
-    lost_reason = fields.Text('Additional comments for cancel reason ')
+    lost_reason = fields.Text('Additional comments for cancel reason')
     required_reason = fields.Boolean('Required Reason ?')
 
     @api.onchange('lost_reason_id')
@@ -408,7 +415,7 @@ class SaleOrderLine(models.Model):
 	for obj in self:
 	    obj.variance = obj.product_uom_qty - obj.wharehouse_in
 
- 
+
     @api.depends('product_uom_qty','hours','days','discount', 'price_unit', 'tax_id')
     def _compute_amount(self):
         """
@@ -523,7 +530,7 @@ class AccounTax(models.Model):
             'total_included': currency.round(total_included) if round_total else total_included,
             'base': base,
         }
-   
+
 class PurchaseOrder(models.Model):
    _inherit = 'purchase.order'
 

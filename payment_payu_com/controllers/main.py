@@ -89,37 +89,43 @@ class PayuController(http.Controller):
         request.session['sale_last_order_id'] = sale_order_id.id
         tx_id = request.env['payment.transaction'].sudo().search([('reference', '=', result['merchantReference'])])
         tx = tx_id
+        print '\n\nsale_order_id.state',sale_order_id.state
         if not sale_order_id or (sale_order_id.amount_total and not tx):
             return request.redirect('/shop')
-        if (not sale_order_id.amount_total and not tx) or tx.state in ['pending', 'done']:
-            if (not sale_order_id.amount_total and not tx):
-                sale_order_id.action_button_confirm()
-            email_act = sale_order_id.action_quotation_send()
+        if (not sale_order_id.amount_total and not tx) or tx.state in ['pending']:
+            if sale_order_id.state in ['draft', 'sent']:
+                if (not sale_order_id.amount_total and not tx):
+                    sale_order_id.action_button_confirm()
+                email_act = sale_order_id.action_quotation_send()
         elif tx and tx.state == 'cancel':
             sale_order_id.action_cancel()
         elif tx and (tx.state == 'draft' or tx.state == 'sent' or tx.state == 'done'):
-            if result and payu_response['successful'] and payu_response['TRANSACTION_STATUS'] in ['SUCCESSFUL', 'PARTIAL_PAYMENT', 'OVER_PAYMENT']:
+#             if result and payu_response['successful'] and payu_response['TRANSACTION_STATUS'] in ['SUCCESSFUL', 'PARTIAL_PAYMENT', 'OVER_PAYMENT']:
+            if result and payu_response['TRANSACTION_STATUS'] in ['SUCCESSFUL', 'PARTIAL_PAYMENT', 'OVER_PAYMENT']:
                 transaction = tx.sudo().write({'state': 'done', 'date_validate': datetime.now(), 'acquirer_reference': result['payUReference']})
                 email_act = sale_order_id.action_quotation_send()
                 action_confirm_res = sale_order_id.action_confirm()
                 sale_order = sale_order_id.read([])
-            if sale_order_id.state == 'sale':
-                journal_ids = request.env['account.journal'].sudo().search([('name', '=', 'FNB 62085815143')], limit=1)
-                journal = journal_ids.read([])
+#             if sale_order_id.state == 'sale':
+#                 print '\n\nif state= sale'
+#                 journal_ids = request.env['account.journal'].sudo().search([('name', '=', 'FNB 62085815143')], limit=1)
+#                 journal = journal_ids.read([])
             currency = request.env['res.currency'].sudo().search([('name', '=', 'ZAR')], limit=1)
             method = request.env['account.payment.method'].sudo().search([('name', '=', 'Manual')], limit=1)
-            account_payment = {
-                'partner_id': sale_order[0]['partner_id'][0],
-                'partner_type': 'customer',
-                'journal_id': journal_ids.id,
-                #'invoice_ids':[(4,inv_obj.id,0)],
-                'amount': sale_order[0]['amount_total'],
-                'communication': sale_order_id.name,
-                'currency_id': currency.id,
-                'payment_type': 'inbound',
-                'payment_method_id': method.id,
-                'payment_transaction_id': tx.id,
-            }
+            journal_id = request.env['account.journal'].search([('name', '=', 'FNB - Cheque Account 6208585815143')], limit=1, order="id desc")
+            if journal_id:
+                account_payment = {
+                    'partner_id': sale_order[0]['partner_id'][0],
+                    'partner_type': 'customer',
+                    'journal_id': journal_id.id ,
+                    #'invoice_ids':[(4,inv_obj.id,0)],
+                    'amount': sale_order[0]['amount_total'],
+                    'communication': sale_order_id.name,
+                    'currency_id': currency.id,
+                    'payment_type': 'inbound',
+                    'payment_method_id': method.id,
+                    'payment_transaction_id': tx.id,
+                }
             acc_payment = request.env['account.payment'].sudo().create(account_payment)
             acc_payment.sudo().post()
             sale_order_id = request.session.get('sale_last_order_id')

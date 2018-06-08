@@ -284,6 +284,7 @@ class Project(models.Model):
     division_ids = fields.Many2many('division.division','project_div_rel','project_id','div_id',string="Division")
     stock_picking_count = fields.Integer(compute="_compute_stock_picking_count", string="Picking Count")
     pricelist_id = fields.Many2one("product.pricelist", string="POS Pricelist")
+    locked = fields.Boolean('Beverage Selection Locked', help="Locked the product add/remove from website beverage selection page")
 
     def _compute_is_manager(self):
         for project in self:

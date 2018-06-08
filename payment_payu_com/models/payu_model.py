@@ -100,6 +100,35 @@ class AcquirerPayu(models.Model):
 class Payu(models.Model):
     _inherit = 'payment.transaction'
 
+#     @api.model
+#     def create(self, vals):
+#         res = super(Payu, self).create(vals)
+#         print '\n\nres>>>>>',res, '\n\n'
+#         order_id = res.sale_order_id
+#         print '\n\norder_id',order_id
+#         account_payment_id = self.env['account.payment'].search([('communication', '=', order_id.name)])
+#         print '\n\naccount_payment_id',account_payment_id
+#         journal_id = self.env['account.journal'].search([('name', '=', 'FNB - Cheque Account 6208585815143')], limit=1, order="id desc")
+#         print '\n\njournal_id', journal_id
+#         print '\n\norder_id.payment_tx_id' ,order_id.payment_tx_id
+#         if not account_payment_id and journal_id and order_id:
+#             print '\n\nin if>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+#             account_payment = {
+#                     'partner_id': order_id.partner_id.id,
+#                     'partner_type': 'customer',
+#                     'journal_id': journal_id.id,
+#                     #'invoice_ids':[(4,inv_obj.id,0)],
+#                     'amount': order_id.amount_total,
+#                     'communication': order_id.name,
+# #                     'currency_id': currency.id,
+#                     'payment_type': 'inbound',
+#                     'payment_method_id': journal_id.inbound_payment_method_ids.id,
+#                     'payment_transaction_id': order_id.payment_tx_id.id,
+#                 }
+#             acc_payment_id = self.env['account.payment'].create(account_payment)
+#             print '\n\nacc_payment_id', acc_payment_id, '\n\n'
+#         return res
+
     @api.model
     def _payu_form_get_tx_from_data(self, data):
         """ Given a data dict coming from payu, verify it and find the related

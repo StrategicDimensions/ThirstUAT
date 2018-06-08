@@ -1,0 +1,240 @@
+<odoo>
+    <template id="assets_frontend" inherit_id='website.assets_frontend'>
+        <xpath expr="." position="inside">
+            <link rel="stylesheet" href="/kt_thirst_customization/static/src/css/style.css"/>
+            <script type="text/javascript" src="/kt_thirst_customization/static/src/js/beverages_selection.js"></script>
+        </xpath>
+    </template>
+    <template id="beverage_selection_page_custom" name="Beverage Selection">
+        <t t-call="website.layout">
+            <div class="card">
+                <ul class="nav nav-tabs" role="tablist">
+                    <t t-set="count" t-value="0"/>
+                    <t t-foreach="result.keys()" t-as="menu">
+                        <t t-if="menu.beverage_menu_id.beverage_product_ids">
+                            <li role="presentation" t-att-class="'active' if active_menu_id == menu.beverage_menu_id.id else ''">
+                                <a t-attf-href="#tab_#{menu.id}" t-att-aria-controls="menu.id" role="tab"
+                                   data-toggle="tab">
+                                    <t t-esc="menu.beverage_menu_id.name"/>
+                                </a>
+                            </li>
+                            <t t-set="count" t-value="1"/>
+                        </t>
+                    </t>
+                </ul>
+                <!-- Tab panes -->
+                <div class="tab-content">
+                    <t t-set="count" t-value="0"/>
+                    <t t-foreach="result.keys()" t-as="menu">
+                        <t t-if="menu.beverage_menu_id.beverage_product_ids">
+                            <div role="tabpanel" t-att-class="'tab-pane active' if active_menu_id == menu.beverage_menu_id.id else 'tab-pane'"
+                                 t-attf-id="tab_#{menu.id}"
+                                 style="float: left;height: 100%;width: 100%;background: white;">
+                                <div id="wrap" class="oe_structure">
+                                    <div class="col-md-9">
+                                        <div class="oe_product_cart">
+                                            <div style="float:right">
+                                                <t t-if="view_mode == 'grid' ">
+                                                    <button id="products_list_button" type="submit"
+                                                            class="btn btn-primary"
+                                                            t-attf-onclick="view_mode_list()">View List
+                                                    </button>
+                                                </t>
+                                                <t t-if="view_mode == 'list' ">
+                                                    <button id="products_grid_button" type="submit"
+                                                            class="btn btn-primary"
+                                                            t-attf-onclick="view_mode_grid()">View Grid
+                                                    </button>
+                                                </t>
+                                            </div>
+
+                                            <t t-if="result[menu]['premium']">
+
+                                            </t>
+                                            <t t-if="result[menu]['standard']">
+                                                <p>
+                                                    <br/>
+                                                </p>
+                                                <t t-if="view_mode == 'grid'">
+                                                    <div id="all_products_grid_view">
+                                                        <div style="margin: 0px 10px;"
+                                                             class="oe_product_image"><!--- 190 44 -->
+                                                            <center>
+                                                                <h2>Standard Beverages</h2>
+                                                            </center>
+                                                        </div>
+                                                        <t t-foreach="result[menu]['standard'].keys()" t-as="category">
+                                                            <t t-if="category">
+                                                                <div id="wrap" class="oe_structure oe_empty"
+                                                                     style="float: left;width: 100%;">
+                                                                    <br/>
+                                                                    <section
+                                                                            class="jumbotron s_button bg-gray-lighter mt0"
+                                                                            style="height: 136px; overflow: hidden;">
+                                                                        <div class="container">
+                                                                            <div class="row">
+                                                                                <div class="mt0 col-md-9 mb0">
+                                                                                    <p class="mb0">
+                                                                                        <strong>
+                                                                                            <font style="font-size: 36px;">
+                                                                                                <t t-esc="category.parent_categ.name"/>
+                                                                                                >
+                                                                                                <t t-esc="category.name"/>
+                                                                                            </font>
+                                                                                        </strong>
+                                                                                    </p>
+                                                                                    <t t-set="category_limit"
+                                                                                       t-value="request.env['beverages.sub.category.rel'].sudo().search([('beverage_id','=',menu.beverage_menu_id.id),('sub_categ_id','=',category.id)])"/>
+                                                                                    <p class="mb0">Please select
+                                                                                        <t t-esc="category_limit.max_products"/>
+                                                                                        <t t-esc="category_limit.sub_categ_id.name"/>
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </section>
+                                                                    <br/>
+                                                                </div>
+                                                                <div class="col-md-12"
+                                                                     style="border-collapse: collapse;">
+                                                                    <t t-value="menu.beverage_menu_id.beverage_product_ids.filtered(lambda r: r.sub_categ_id == category)"
+                                                                       t-set="product_list"/>
+                                                                    <ul style="list-style: none;float: left;width: 100%;">
+                                                                        <t t-foreach="product_list" t-as="product">
+
+                                                                            <li class="oe_product oe_grid oe-height-2"
+                                                                                style="width:20%;max-width:20%;float: left;min-height: 216px;">
+                                                                                <center>
+                                                                                    <t t-if="product.product_product_id.image_medium">
+                                                                                        <span itemprop="image"
+                                                                                              t-field="product.product_product_id.image_medium"
+                                                                                              t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'max-width:50%'}"/>
+                                                                                    </t>
+                                                                                    <t t-if="not product.product_product_id.image_medium">
+                                                                                        <span itemprop="image"
+                                                                                              t-field="product.product_product_id.image_medium"
+                                                                                              t-options="{'widget': 'image', 'resize': None if product_image_big else '300x300', 'zoom': 'image','style':'margin:15px;'}"/>
+                                                                                    </t>
+                                                                                </center>
+                                                                                <div style="margin-left:10px;height: 47px;overflow: hidden;">
+                                                                                    <t style="margin-left:10px;"
+                                                                                       t-esc="product.product_product_id.name"/>
+                                                                                    <br/>
+                                                                                </div>
+                                                                                <div style="float:left;margin-left:10px;">
+                                                                                    <p></p>
+                                                                                    <b>
+                                                                                        <t>R 0.00</t>
+                                                                                    </b>
+                                                                                </div>
+                                                                                <t t-value="result.keys()[0].project_id"
+                                                                                   t-set="project_id"/>
+                                                                                <t t-set="selection"
+                                                                                   t-value="request.env['beverages.selection'].sudo().search([('project_id','=',project_id.id),('beverage_menu_id','=',menu.beverage_menu_id.id)])"/>
+                                                                                <t t-set="selected_beverages"
+                                                                                   t-value="request.env['selected.beverages'].sudo().search([('product_id','=',product.product_product_id.id),('bev_select_id','=',selection.id)])"/>
+
+                                                                                <div style="float:left;margin-left:20px;" t-if="not project_id.locked">
+                                                                                    <t t-if="not selected_beverages">
+                                                                                        <p></p>
+                                                                                        <input type="button"
+                                                                                               class="btn btn-default btn-primary mb32 a-submit select"
+                                                                                               value="Select"
+                                                                                               t-attf-onclick="add_product('#{project_id.id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{menu.beverage_menu_id.id}')"
+                                                                                               id="add_product_id"
+                                                                                               style="display:block;padding:0px 10px 0px 10px;"/>
+                                                                                    </t>
+                                                                                    <t t-if="selected_beverages">
+                                                                                        <p></p>
+                                                                                        <input type="button"
+                                                                                               class="btn btn-default mb32 a-submit select"
+                                                                                               value="Remove"
+                                                                                               t-attf-onclick="remove_product('#{project_id.id}','#{product.id}','#{product.product_product_id.id}','#{product.product_product_id.name}','#{product.sub_categ_id.id}','#{product.sub_categ_id.name}','#{product.prod_type}','#{menu.beverage_menu_id.id}')"
+                                                                                               id="remove_product_id"
+                                                                                               style="display:block;padding:0px 10px 0px 10px;background-color:red;"/>
+                                                                                    </t>
+                                                                                </div>
+                                                                            </li>
+                                                                        </t>
+                                                                    </ul>
+                                                                </div>
+                                                            </t>
+                                                        </t>
+                                                        <div class="pull-right">
+                                                            <t t-if="menu_last">
+                                                                <a t-attf-href="/beverage_selection/complete/{{result.keys()[0].project_id.id}}" class="btn btn-primary mb16 mt16 o_next_finished">I'M FINISHED</a>
+                                                            </t>
+                                                            <t t-if="not menu_last">
+                                                                <a class="btn btn-primary mb16 mt16 o_next_tab">Next</a>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </t>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div id="beverages_float"
+                                             style="position:fixed;top:150px;right:30px;bottom:30px;width:290px; overflow-y:auto;">
+                                            <t t-value="result.keys()[0].project_id"
+                                               t-set="project_id"/>
+                                            <t t-set="selection"
+                                               t-value="request.env['beverages.selection'].sudo().search([('project_id','=',project_id.id),('beverage_menu_id','=',menu.beverage_menu_id.id)])"/>
+                                            <table class="table table-responsive" id="standard_beverages_table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="background-color:lightgray; color:green;padding:3px;">
+                                                            Standard Selected
+                                                            Beverages
+                                                        </td>
+                                                    </tr>
+                                                    <t t-if="selection">
+                                                        <t t-foreach="selection.standard_beverage_ids" t-as="category">
+                                                            <t t-if="category">
+                                                                <tr>
+                                                                    <td style="border-bottom:none;border-top:none;padding:3px;">
+                                                                        <span t-esc="category.product_id.name"/>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </t>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                            <table class="table table-responsive" id="premium_beverages_table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td colspan="3"
+                                                            style="background-color:lightgray; color:green;padding:3px;">
+                                                            Premium
+                                                            Selected Beverages
+                                                        </td>
+                                                    </tr>
+                                                    <t t-if="selection">
+                                                        <t t-foreach="selection.premium_beverage_ids" t-as="category">
+                                                            <t t-if="category">
+                                                                <tr>
+                                                                    <td style="border-bottom:none;border-top:none;padding:3px;">
+                                                                        <span t-esc="category.product_id.name"/>
+                                                                    </td>
+                                                                </tr>
+                                                            </t>
+                                                        </t>
+                                                    </t>
+                                                </tbody>
+                                            </table>
+                                            <table class="table table-responsive" id="beverages_table">
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <t t-set="count" t-value="1"/>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
